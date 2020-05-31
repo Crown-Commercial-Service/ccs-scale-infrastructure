@@ -92,7 +92,7 @@ resource "aws_security_group" "allow_inbound_https" {
 # VPC Access control list
 ##############################################################
 
-resource "aws_network_acl" "acl-0a4ad1624819281ff" {
+resource "aws_network_acl" "scale" {
   vpc_id     = var.vpc_id
   subnet_ids = var.private_app_subnet_ids
 
@@ -105,100 +105,89 @@ resource "aws_network_acl" "acl-0a4ad1624819281ff" {
   }
 }
 
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-ingress-http" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
+resource "aws_network_acl_rule" "ingress_http" {
+  network_acl_id = aws_network_acl.scale.id
   egress         = false
-  from_port      = var.http_port
-  to_port        = var.http_port
+  from_port      = 80
+  to_port        = 80
   rule_number    = 100
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
 }
 
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-ingress-https" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
+resource "aws_network_acl_rule" "ingress_https" {
+  network_acl_id = aws_network_acl.scale.id
   egress         = false
-  from_port      = var.https_port
-  to_port        = var.https_port
+  from_port      = 443
+  to_port        = 443
   rule_number    = 110
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
 }
 
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-ingress-http-9000" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
+resource "aws_network_acl_rule" "ingress_ssh" {
+  network_acl_id = aws_network_acl.scale.id
+  egress         = false
+  from_port      = 22
+  to_port        = 22
+  rule_number    = 120
+  rule_action    = "allow"
+  protocol       = "tcp"
+  cidr_block     = "0.0.0.0/0"
+}
+
+resource "aws_network_acl_rule" "ingress_http_9000" {
+  network_acl_id = aws_network_acl.scale.id
   egress         = false
   from_port      = 9000
   to_port        = 9000
+  rule_number    = 130
+  rule_action    = "allow"
+  protocol       = "tcp"
+  cidr_block     = "0.0.0.0/0"
+}
+
+resource "aws_network_acl_rule" "ingress_http_9010" {
+  network_acl_id = aws_network_acl.scale.id
+  egress         = false
+  from_port      = 9010
+  to_port        = 9010
   rule_number    = 140
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
 }
 
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-ingress-http-9010" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
-  egress         = false
-  from_port      = 9010
-  to_port        = 9010
-  rule_number    = 141
-  rule_action    = "allow"
-  protocol       = "tcp"
-  cidr_block     = "0.0.0.0/0"
-}
-
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-ingress-http-9030" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
+resource "aws_network_acl_rule" "ingress_http_9030" {
+  network_acl_id = aws_network_acl.scale.id
   egress         = false
   from_port      = 9030
   to_port        = 9030
-  rule_number    = 142
-  rule_action    = "allow"
-  protocol       = "tcp"
-  cidr_block     = "0.0.0.0/0"
-}
-
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-ingress-ephemeral" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
-  egress         = false
-  from_port      = 1024
-  to_port        = 65535
   rule_number    = 150
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
 }
 
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-egress-http" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
+resource "aws_network_acl_rule" "egress_http" {
+  network_acl_id = aws_network_acl.scale.id
   egress         = true
   from_port      = var.http_port
   to_port        = var.http_port
-  rule_number    = 100
+  rule_number    = 160
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
 }
 
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-egress-https" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
+resource "aws_network_acl_rule" "egress_https" {
+  network_acl_id = aws_network_acl.scale.id
   egress         = true
   from_port      = var.https_port
   to_port        = var.https_port
-  rule_number    = 110
-  rule_action    = "allow"
-  protocol       = "tcp"
-  cidr_block     = "0.0.0.0/0"
-}
-
-resource "aws_network_acl_rule" "acl-0a4ad1624819281ff-egress-ephemeral" {
-  network_acl_id = aws_network_acl.acl-0a4ad1624819281ff.id
-  egress         = true
-  from_port      = 1024
-  to_port        = 65535
-  rule_number    = 130
+  rule_number    = 170
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
