@@ -182,12 +182,23 @@ resource "aws_network_acl_rule" "egress_https" {
   cidr_block     = "0.0.0.0/0"
 }
 
+resource "aws_network_acl_rule" "ingress_ephemeral" {
+  network_acl_id = aws_network_acl.scale.id
+  egress         = false
+  from_port      = 1024
+  to_port        = 65535
+  rule_number    = 200
+  rule_action    = "allow"
+  protocol       = "tcp"
+  cidr_block     = "0.0.0.0/0"
+}
+
 resource "aws_network_acl_rule" "egress_ephemeral" {
   network_acl_id = aws_network_acl.scale.id
   egress         = true
   from_port      = 1024
   to_port        = 65535
-  rule_number    = 130
+  rule_number    = 210
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"
