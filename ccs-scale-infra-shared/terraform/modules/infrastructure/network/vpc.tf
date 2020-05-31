@@ -127,17 +127,6 @@ resource "aws_network_acl_rule" "ingress_https" {
   cidr_block     = "0.0.0.0/0"
 }
 
-resource "aws_network_acl_rule" "ingress_ssh" {
-  network_acl_id = aws_network_acl.scale.id
-  egress         = false
-  from_port      = 22
-  to_port        = 22
-  rule_number    = 120
-  rule_action    = "allow"
-  protocol       = "tcp"
-  cidr_block     = "0.0.0.0/0"
-}
-
 resource "aws_network_acl_rule" "ingress_http_9000" {
   network_acl_id = aws_network_acl.scale.id
   egress         = false
@@ -188,6 +177,17 @@ resource "aws_network_acl_rule" "egress_https" {
   from_port      = var.https_port
   to_port        = var.https_port
   rule_number    = 170
+  rule_action    = "allow"
+  protocol       = "tcp"
+  cidr_block     = "0.0.0.0/0"
+}
+
+resource "aws_network_acl_rule" "egress_ephemeral" {
+  network_acl_id = aws_network_acl.scale.id
+  egress         = true
+  from_port      = 1024
+  to_port        = 65535
+  rule_number    = 130
   rule_action    = "allow"
   protocol       = "tcp"
   cidr_block     = "0.0.0.0/0"

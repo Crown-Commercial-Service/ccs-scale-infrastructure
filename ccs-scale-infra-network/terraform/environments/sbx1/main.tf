@@ -48,10 +48,6 @@ locals {
       }
     }
   }
-
-  # Elastic IPs, provisioned by ccs-scale-bootstrap
-  eip_id_nat = "eipalloc-090ce84d6f36c3b55"
-  eip_id_nlb = "eipalloc-0643c7a763f04bb59"
 }
 
 data "aws_ssm_parameter" "aws_account_id" {

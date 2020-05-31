@@ -7,7 +7,6 @@ This sub-project builds the next level on infrastructure on top of `ccs-scale-in
 
 This project will provision:
 
-- API Gateway (no methods yet - they are added in later scripts - see repo level README)
 - Network Load Balancers (private & public)
 - VPC Link
 - VPC Endpoints

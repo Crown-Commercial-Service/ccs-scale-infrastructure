@@ -17,14 +17,3 @@ module "network" {
   eip_id_nat             = var.eip_id_nat
   eip_id_nlb             = var.eip_id_nlb
 }
-
-#module "ecs" {
-#  source      = "./ecs"
-#  vpc_id      = var.vpc_id
-#  environment = var.environment
-#}
-
-##module "api" {
-#  source      = "./api"
-#  environment = var.environment
-#}
