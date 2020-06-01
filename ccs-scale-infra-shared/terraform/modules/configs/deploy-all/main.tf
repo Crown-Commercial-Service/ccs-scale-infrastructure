@@ -1,5 +1,5 @@
 #########################################################
-# Config: deploy-fat
+# Config: deploy-all
 #
 # This configuration will deploy all components.
 #########################################################
@@ -28,6 +28,10 @@ data "aws_ssm_parameter" "private_app_subnet_ids" {
   name = "${lower(var.environment)}-private-app-subnet-ids"
 }
 
+data "aws_ssm_parameter" "private_db_subnet_ids" {
+  name = "${lower(var.environment)}-private-db-subnet-ids"
+}
+
 module "infrastructure" {
   source                 = "../../infrastructure"
   aws_account_id         = var.aws_account_id
@@ -47,4 +51,12 @@ module "ssm" {
   lb_public_arn  = module.infrastructure.lb_public_arn
   vpc_link_id    = module.infrastructure.vpc_link_id
   lb_private_dns = module.infrastructure.lb_private_dns
+}
+
+module "bastion" {
+  source         = "../../bastion"
+  environment    = var.environment
+  vpc_id         = data.aws_ssm_parameter.vpc_id.value
+  subnet_id      = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)[0]
+  db_cidr_blocks = var.db_cidr_blocks
 }

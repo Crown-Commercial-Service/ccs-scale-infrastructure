@@ -15,4 +15,14 @@ This project will provision:
 - Network Access Control Lists
 
 
+### Bastion Host
+The Bastion Host EC2 instance provisioned in this project can be used tunnel SSH connections to access the Postgres Databases. 
 
+1. You will need the pem file for the EC2 key pair - the key must match the name `{environment}-bastion-key`, e.g. `sbx1-bastion-key`.
+
+2. You can then open a terminal and make the tunnel connection:
+```
+ssh -i {ENVIRONMENT}-bastion-key.pem -L 5432:{POSTGRES_DB_ENDPOIN}:5432 ubuntu@{EC2_PUBLIC_IP}
+```
+
+3. You can then access the database as if it were on localhost on your own machine

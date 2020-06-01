@@ -10,6 +10,10 @@ variable "ecr_access_cidr_blocks" {
   type = list(string)
 }
 
+variable "db_cidr_blocks" {
+  type = list(string)
+}
+
 variable "eip_id_nat" {
   type = string
 }

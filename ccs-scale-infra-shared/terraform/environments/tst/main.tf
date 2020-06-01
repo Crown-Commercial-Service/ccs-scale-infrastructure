@@ -19,11 +19,10 @@ provider "aws" {
 }
 
 locals {
-  environment    = "TST"
-  cidr_block_vpc = "192.170.0.0/16"
-  cidr_block_web = "192.170.1.0/24"
-  cidr_block_app = "192.170.3.0/24"
-  cidr_block_db  = "192.170.5.0/24"
+  environment     = "TST"
+  cidr_blocks_web = ["192.170.1.0/24"]
+  cidr_blocks_app = ["192.170.3.0/24"]
+  cidr_blocks_db  = ["192.170.5.0/24"]
 
   # Elastic IPs, provisioned by ccs-scale-bootstrap
   eip_id_nat = "eipalloc-058c4a8af0cc0883d"
@@ -38,7 +37,8 @@ module "deploy" {
   source                 = "../../modules/configs/deploy-all"
   aws_account_id         = data.aws_ssm_parameter.aws_account_id.value
   environment            = local.environment
-  ecr_access_cidr_blocks = [local.cidr_block_web, local.cidr_block_app, local.cidr_block_db]
+  ecr_access_cidr_blocks = flatten([local.cidr_blocks_web, local.cidr_blocks_app, local.cidr_blocks_db])
   eip_id_nat             = local.eip_id_nat
   eip_id_nlb             = local.eip_id_nlb
+  db_cidr_blocks         = local.cidr_blocks_db
 }
