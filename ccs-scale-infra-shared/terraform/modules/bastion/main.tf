@@ -1,11 +1,12 @@
-##############################################################
-# Bastion Host AZ A
-##############################################################
+#########################################################
+# Bastion Host
+#
+# To allow SSH tunneling to Aurora databases.
+#########################################################
 module "globals" {
   source = "../globals"
 }
 
-#TODO: Security Group is very open - needs tightening
 resource "aws_security_group" "allow_bastion_db_access" {
   name        = "allow_bastion_db_access"
   description = "Allow SSH tunneling to Databases via Bastion host"
