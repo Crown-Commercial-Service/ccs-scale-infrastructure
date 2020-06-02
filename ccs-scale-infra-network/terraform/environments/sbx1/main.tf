@@ -70,4 +70,7 @@ module "ssm" {
   public_web_subnet_ids  = module.vpc.public_web_subnet_ids
   private_app_subnet_ids = module.vpc.private_app_subnet_ids
   private_db_subnet_ids  = module.vpc.private_db_subnet_ids
+  cidr_blocks_web        = ["192.168.1.0/24"]
+  cidr_blocks_app        = ["192.168.3.0/24"]
+  cidr_blocks_db         = ["192.168.5.0/24"]
 }
