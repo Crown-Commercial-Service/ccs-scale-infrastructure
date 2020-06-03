@@ -21,3 +21,15 @@ variable "private_app_subnet_ids" {
 variable "private_db_subnet_ids" {
   type = list(string)
 }
+
+variable "cidr_blocks_web" {
+  type = list(string)
+}
+
+variable "cidr_blocks_app" {
+  type = list(string)
+}
+
+variable "cidr_blocks_db" {
+  type = list(string)
+}

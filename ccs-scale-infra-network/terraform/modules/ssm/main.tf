@@ -35,3 +35,21 @@ resource "aws_ssm_parameter" "private_db_subnet_ids" {
   type  = "String"
   value = join(",", var.private_db_subnet_ids)
 }
+
+resource "aws_ssm_parameter" "cidr_blocks_web" {
+  name  = "${lower(var.environment)}-cidr-blocks-web"
+  type  = "String"
+  value = join(",", var.cidr_blocks_web)
+}
+
+resource "aws_ssm_parameter" "cidr_blocks_app" {
+  name  = "${lower(var.environment)}-cidr-blocks-app"
+  type  = "String"
+  value = join(",", var.cidr_blocks_app)
+}
+
+resource "aws_ssm_parameter" "cidr_blocks_db" {
+  name  = "${lower(var.environment)}-cidr-blocks-db"
+  type  = "String"
+  value = join(",", var.cidr_blocks_db)
+}

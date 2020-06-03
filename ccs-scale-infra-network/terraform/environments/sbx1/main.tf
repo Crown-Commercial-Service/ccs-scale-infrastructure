@@ -70,4 +70,7 @@ module "ssm" {
   public_web_subnet_ids  = module.vpc.public_web_subnet_ids
   private_app_subnet_ids = module.vpc.private_app_subnet_ids
   private_db_subnet_ids  = module.vpc.private_db_subnet_ids
+  cidr_blocks_web        = local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"]
+  cidr_blocks_app        = local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"]
+  cidr_blocks_db         = local.subnet_configs["private_db"]["eu-west-2a"]["cidr_block"]
 }
