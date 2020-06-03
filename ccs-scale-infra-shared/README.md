@@ -22,7 +22,7 @@ The Bastion Host EC2 instance provisioned in this project can be used tunnel SSH
 
 2. You can then open a terminal and make the tunnel connection:
 ```
-ssh -i {ENVIRONMENT}-bastion-key.pem -L 5432:{POSTGRES_DB_ENDPOIN}:5432 ubuntu@{EC2_PUBLIC_IP}
+ssh -i {ENVIRONMENT}-bastion-key.pem -L 5432:{POSTGRES_DB_ENDPOINT}:5432 ubuntu@{EC2_PUBLIC_IP}
 ```
 
 3. You can then access the database as if it were on localhost on your own machine
