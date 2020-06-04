@@ -42,7 +42,11 @@ locals {
         "az_id"      = "2a"
         "cidr_block" = "192.168.5.0/24"
       }
-    }
+    },
+      "eu-west-2b" = {
+        "az_id"      = "2b"
+        "cidr_block" = "192.168.11.0/24"
+      }
   }
 }
 
