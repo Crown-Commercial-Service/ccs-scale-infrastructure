@@ -55,13 +55,11 @@ data "aws_ssm_parameter" "aws_account_id" {
 }
 
 module "vpc" {
-  source         = "../../modules/vpc-one-az"
+  source         = "../../modules/vpc"
   aws_account_id = data.aws_ssm_parameter.aws_account_id.value
   environment    = local.environment
   cidr_block_vpc = local.cidr_block_vpc
-  cidr_block_web = local.cidr_block_web
-  cidr_block_app = local.cidr_block_app
-  cidr_block_db  = local.cidr_block_db
+  subnet_configs = local.subnet_configs
 }
 
 module "ssm" {
