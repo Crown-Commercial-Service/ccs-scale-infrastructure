@@ -17,7 +17,7 @@ phases:
       - "unzip -o terraform.zip"
   build:
     commands:
-      - cd "${CODEBUILD_SRC_DIR}/terraform/ccs-scale-infra-network/environments/${ENVIRONMENT}"
+      - cd "${CODEBUILD_SRC_DIR}/ccs-scale-infra-network/terraform/environments/${ENVIRONMENT}"
       - terraform init -no-color
       - terraform $TF_ACTION -auto-approve
 
