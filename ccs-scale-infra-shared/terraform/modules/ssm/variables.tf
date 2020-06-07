@@ -1,0 +1,19 @@
+variable "environment" {
+  type = string
+}
+
+variable "lb_private_arn" {
+  type = string
+}
+
+variable "lb_public_arn" {
+  type = string
+}
+
+variable "vpc_link_id" {
+  type = string
+}
+
+variable "lb_private_dns" {
+  type = string
+}
