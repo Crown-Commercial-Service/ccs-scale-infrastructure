@@ -10,6 +10,12 @@ resource "aws_ssm_parameter" "lb_private_arn" {
   value = var.lb_private_arn
 }
 
+resource "aws_ssm_parameter" "lb_private_db_arn" {
+  name  = "${lower(var.environment)}-lb-private-db-arn"
+  type  = "String"
+  value = var.lb_private_db_arn
+}
+
 resource "aws_ssm_parameter" "lb_public_arn" {
   name  = "${lower(var.environment)}-lb-public-arn"
   type  = "String"
@@ -26,4 +32,10 @@ resource "aws_ssm_parameter" "lb_private_dns" {
   name  = "${lower(var.environment)}-lb-private-dns"
   type  = "String"
   value = var.lb_private_dns
+}
+
+resource "aws_ssm_parameter" "lb_private_db_dns" {
+  name  = "${lower(var.environment)}-lb-private-db-dns"
+  type  = "String"
+  value = var.lb_private_db_dns
 }

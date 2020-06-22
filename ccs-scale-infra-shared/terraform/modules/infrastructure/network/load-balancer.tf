@@ -26,6 +26,20 @@ resource "aws_lb" "private" {
   }
 }
 
+resource "aws_lb" "private_db" {
+  name               = "SCALE-EU2-${upper(var.environment)}-NLB-INTERNAL-DB"
+  internal           = true
+  load_balancer_type = "network"
+  subnets            = var.private_db_subnet_ids
+
+  tags = {
+    Project     = module.globals.project_name
+    Environment = upper(var.environment)
+    Cost_Code   = module.globals.project_cost_code
+    AppType     = "LOADBALANCER"
+  }
+}
+
 resource "aws_lb" "public" {
   name               = "SCALE-EU2-${upper(var.environment)}-NLB-EXTERNAL"
   internal           = false
