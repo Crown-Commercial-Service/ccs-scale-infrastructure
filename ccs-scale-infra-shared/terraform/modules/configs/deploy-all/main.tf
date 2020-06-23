@@ -57,6 +57,12 @@ module "infrastructure" {
   eip_id_nlb             = var.eip_id_nlb
 }
 
+module "api" {
+  source         = "../../api"
+  aws_account_id = var.aws_account_id
+  environment    = var.environment
+}
+
 module "ssm" {
   source            = "../../ssm"
   environment       = var.environment
@@ -66,6 +72,9 @@ module "ssm" {
   vpc_link_id       = module.infrastructure.vpc_link_id
   lb_private_dns    = module.infrastructure.lb_private_dns
   lb_private_db_dns = module.infrastructure.lb_private_db_dns
+  scale_rest_api_id             = module.api.scale_rest_api_id
+  scale_rest_execution_arn      = module.api.scale_rest_execution_arn
+  scale_rest_parent_resource_id = module.api.scale_rest_parent_resource_id
 }
 
 module "bastion" {

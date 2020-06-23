@@ -25,3 +25,15 @@ variable "lb_private_dns" {
 variable "lb_private_db_dns" {
   type = string
 }
+
+variable "scale_rest_api_id" {
+  type = string
+}
+
+variable "scale_rest_execution_arn" {
+  type = string
+}
+
+variable "scale_rest_parent_resource_id" {
+  type = string
+}

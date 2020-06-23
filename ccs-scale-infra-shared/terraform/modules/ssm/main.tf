@@ -39,3 +39,21 @@ resource "aws_ssm_parameter" "lb_private_db_dns" {
   type  = "String"
   value = var.lb_private_db_dns
 }
+
+resource "aws_ssm_parameter" "scale_rest_api_id" {
+  name  = "${lower(var.environment)}-scale-rest-api-id"
+  type  = "String"
+  value = var.scale_rest_api_id
+}
+
+resource "aws_ssm_parameter" "scale_rest_execution_arn" {
+  name  = "${lower(var.environment)}-scale-rest-execution-arn"
+  type  = "String"
+  value = var.scale_rest_execution_arn
+}
+
+resource "aws_ssm_parameter" "scale_rest_parent_resource_id" {
+  name  = "${lower(var.environment)}-scale-rest-parent-resource-id"
+  type  = "String"
+  value = var.scale_rest_parent_resource_id
+}
