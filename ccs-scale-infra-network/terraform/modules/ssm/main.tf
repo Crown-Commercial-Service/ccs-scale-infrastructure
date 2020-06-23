@@ -36,6 +36,12 @@ resource "aws_ssm_parameter" "private_db_subnet_ids" {
   value = join(",", var.private_db_subnet_ids)
 }
 
+resource "aws_ssm_parameter" "cidr_block_vpc" {
+  name  = "${lower(var.environment)}-cidr-block-vpc"
+  type  = "String"
+  value = var.cidr_block_vpc
+}
+
 resource "aws_ssm_parameter" "cidr_blocks_web" {
   name  = "${lower(var.environment)}-cidr-blocks-web"
   type  = "String"

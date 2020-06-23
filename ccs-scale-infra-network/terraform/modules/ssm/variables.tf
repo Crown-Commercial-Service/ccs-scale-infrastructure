@@ -33,3 +33,7 @@ variable "cidr_blocks_app" {
 variable "cidr_blocks_db" {
   type = list(string)
 }
+
+variable "cidr_block_vpc" {
+  type = string
+}
