@@ -8,8 +8,8 @@ module "globals" {
 }
 
 resource "aws_s3_bucket" "logs" {
-  bucket = "scale-${lower(var.environment)}-s3-cloudfront-logs"
-  acl    = "private"
+  bucket        = "scale-${lower(var.environment)}-s3-cloudfront-logs"
+  acl           = "private"
   force_destroy = var.force_destroy_cloudfront_logs_bucket
 
   tags = {

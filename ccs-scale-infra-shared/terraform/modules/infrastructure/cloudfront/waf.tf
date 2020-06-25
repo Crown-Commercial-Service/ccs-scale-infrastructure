@@ -12,5 +12,4 @@ resource "aws_waf_web_acl" "buyer_ui" {
   default_action {
     type = "ALLOW"
   }
-
 }
