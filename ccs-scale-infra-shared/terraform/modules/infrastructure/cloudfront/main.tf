@@ -10,6 +10,7 @@ module "globals" {
 resource "aws_s3_bucket" "logs" {
   bucket = "scale-${lower(var.environment)}-s3-cloudfront-logs"
   acl    = "private"
+  force_destroy = var.force_destroy_cloudfront_logs_bucket
 
   tags = {
     Project     = module.globals.project_name
@@ -23,7 +24,7 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
     domain_name = var.lb_public_dns
     origin_id   = var.lb_public_dns
-    
+
     custom_origin_config {
       http_port              = 80
       https_port             = 443
