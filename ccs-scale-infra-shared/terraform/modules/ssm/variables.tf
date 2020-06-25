@@ -6,6 +6,10 @@ variable "lb_private_arn" {
   type = string
 }
 
+variable "lb_private_db_arn" {
+  type = string
+}
+
 variable "lb_public_arn" {
   type = string
 }
@@ -15,5 +19,9 @@ variable "vpc_link_id" {
 }
 
 variable "lb_private_dns" {
+  type = string
+}
+
+variable "lb_private_db_dns" {
   type = string
 }

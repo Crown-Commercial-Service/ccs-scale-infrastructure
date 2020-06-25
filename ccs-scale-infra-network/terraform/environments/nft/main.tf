@@ -1,12 +1,12 @@
 #########################################################
-# Environment: INT (Integration Testing)
+# Environment: NFT (Non Functional Testing)
 #
 # Deploy SCALE resources
 #########################################################
 terraform {
   backend "s3" {
     bucket         = "scale-terraform-state"
-    key            = "ccs-scale-infra-network-int"
+    key            = "ccs-scale-infra-network-nft"
     region         = "eu-west-2"
     dynamodb_table = "scale_terraform_state_lock"
     encrypt        = true
@@ -19,32 +19,51 @@ provider "aws" {
 }
 
 locals {
-  environment    = "INT"
-  cidr_block_vpc = "192.169.0.0/16"
+  environment    = "NFT"
+  cidr_block_vpc = "192.171.0.0/16"
 
   # One AZ
   subnet_configs = {
     "public_web" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.169.1.0/24"
+        "cidr_block" = "192.171.1.0/24"
       }
-      # Additional AZ blocks (maps) go here. No comma separation required.
+      "eu-west-2b" = {
+        "az_id"      = "2b"
+        "cidr_block" = "192.171.7.0/24"
+      }
+      "eu-west-2c" = {
+        "az_id"      = "2c"
+        "cidr_block" = "192.171.13.0/24"
+      }
     }
     "private_app" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.169.3.0/24"
+        "cidr_block" = "192.171.3.0/24"
+      }
+      "eu-west-2b" = {
+        "az_id"      = "2b"
+        "cidr_block" = "192.171.9.0/24"
+      }
+      "eu-west-2c" = {
+        "az_id"      = "2c"
+        "cidr_block" = "192.171.15.0/24"
       }
     }
     "private_db" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.169.5.0/24"
+        "cidr_block" = "192.171.5.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.169.11.0/24"
+        "cidr_block" = "192.171.11.0/24"
+      }
+      "eu-west-2c" = {
+        "az_id"      = "2c"
+        "cidr_block" = "192.171.17.0/24"
       }
     }
   }
@@ -71,7 +90,7 @@ module "ssm" {
   private_app_subnet_ids = module.vpc.private_app_subnet_ids
   private_db_subnet_ids  = module.vpc.private_db_subnet_ids
   cidr_block_vpc         = local.cidr_block_vpc
-  cidr_blocks_web        = [local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"]]
-  cidr_blocks_app        = [local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"]]
-  cidr_blocks_db         = [local.subnet_configs["private_db"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2b"]["cidr_block"]]
+  cidr_blocks_web        = [local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"], local.subnet_configs["public_web"]["eu-west-2b"]["cidr_block"], local.subnet_configs["public_web"]["eu-west-2c"]["cidr_block"]]
+  cidr_blocks_app        = [local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"],local.subnet_configs["private_app"]["eu-west-2b"]["cidr_block"], local.subnet_configs["private_app"]["eu-west-2c"]["cidr_block"]]
+  cidr_blocks_db         = [local.subnet_configs["private_db"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2b"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2c"]["cidr_block"]]
 }
