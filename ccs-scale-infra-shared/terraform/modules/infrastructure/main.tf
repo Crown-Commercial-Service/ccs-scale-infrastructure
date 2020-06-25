@@ -18,3 +18,9 @@ module "network" {
   eip_id_nat             = var.eip_id_nat
   eip_id_nlb             = var.eip_id_nlb
 }
+
+module "cloudfront" {
+  source        = "./cloudfront"
+  environment   = var.environment
+  lb_public_dns = module.network.lb_public_dns
+}
