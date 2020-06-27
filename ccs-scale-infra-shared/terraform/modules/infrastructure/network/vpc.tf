@@ -20,7 +20,8 @@ resource "aws_vpc_endpoint" "vpc_endpoint_ecr" {
     aws_security_group.allow_inbound_https.id
   ]
 
-  subnet_ids          = var.private_app_subnet_ids
+  # Set to whichever subnet group spans the most AZs
+  subnet_ids          = var.private_db_subnet_ids
   private_dns_enabled = true
 
   tags = {
@@ -40,7 +41,8 @@ resource "aws_vpc_endpoint" "vpc_endpoint_cloudwatch" {
     aws_security_group.allow_inbound_https.id
   ]
 
-  subnet_ids          = var.private_app_subnet_ids
+  # Set to whichever subnet group spans the most AZs
+  subnet_ids          = var.private_db_subnet_ids
   private_dns_enabled = true
 
   tags = {
