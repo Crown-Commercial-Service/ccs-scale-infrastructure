@@ -20,50 +20,49 @@ provider "aws" {
 
 locals {
   environment    = "NFT"
-  cidr_block_vpc = "192.171.0.0/16"
+  cidr_block_vpc = "192.168.0.0/16"
 
-  # One AZ
   subnet_configs = {
     "public_web" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.171.1.0/24"
+        "cidr_block" = "192.168.31.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.171.7.0/24"
+        "cidr_block" = "192.168.34.0/24"
       }
       "eu-west-2c" = {
         "az_id"      = "2c"
-        "cidr_block" = "192.171.13.0/24"
+        "cidr_block" = "192.168.37.0/24"
       }
     }
     "private_app" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.171.3.0/24"
+        "cidr_block" = "192.168.32.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.171.9.0/24"
+        "cidr_block" = "192.168.35.0/24"
       }
       "eu-west-2c" = {
         "az_id"      = "2c"
-        "cidr_block" = "192.171.15.0/24"
+        "cidr_block" = "192.168.38.0/24"
       }
     }
     "private_db" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.171.5.0/24"
+        "cidr_block" = "192.168.33.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.171.11.0/24"
+        "cidr_block" = "192.168.36.0/24"
       }
       "eu-west-2c" = {
         "az_id"      = "2c"
-        "cidr_block" = "192.171.17.0/24"
+        "cidr_block" = "192.168.39.0/24"
       }
     }
   }
