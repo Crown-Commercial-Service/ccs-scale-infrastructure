@@ -21,3 +21,7 @@ output "lb_private_dns" {
 output "lb_private_db_dns" {
   value = aws_lb.private_db.dns_name
 }
+
+output "lb_public_dns" {
+  value = aws_lb.public.dns_name
+}
