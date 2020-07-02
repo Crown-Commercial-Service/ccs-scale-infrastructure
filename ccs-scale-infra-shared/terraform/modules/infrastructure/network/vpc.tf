@@ -289,23 +289,17 @@ resource "aws_route_table" "scale_ig" {
 }
 
 resource "aws_route_table" "scale_nat" {
+  count = length(var.public_web_subnet_ids)
+
   vpc_id = var.vpc_id
 
-  # Cannot reference the NAT resource as it hasn't been
-  dynamic "route" {
-    # for_each = var.public_web_subnet_ids
-    for_each = aws_nat_gateway.scale
-    iterator = nat_gateway
-
-    content {
-      cidr_block = "0.0.0.0/0"
-      # nat_gateway_id = aws_nat_gateway.scale[route.key].id
-      nat_gateway_id = nat_gateway.value.id
-    }
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.scale[count.index].id
   }
 
   tags = {
-    Name        = "SCALE:EU2:${upper(var.environment)}:RT:NAT"
+    Name        = "SCALE:EU2:${upper(var.environment)}:RT:NAT:${upper(data.aws_subnet.public["${var.public_web_subnet_ids[count.index]}"].availability_zone)}"
     Project     = module.globals.project_name
     Environment = upper(var.environment)
     Cost_Code   = module.globals.project_cost_code
@@ -317,7 +311,6 @@ resource "aws_route_table" "scale_nat" {
 # Routing Table/Subnet associations - Internet Gateway access
 ##############################################################
 
-# TODO: Provision multiple based on AZ (subnet) config
 resource "aws_route_table_association" "scale_ig" {
   for_each = toset(var.public_web_subnet_ids)
 
@@ -329,19 +322,12 @@ resource "aws_route_table_association" "scale_ig" {
 # Routing Table/Subnet associations - outbound access via NAT Gateway
 ##############################################################
 
-# TODO: Provision multiple based on AZ (subnet) config
 resource "aws_route_table_association" "scale_nat" {
-  for_each = toset(var.private_app_subnet_ids)
+  count = length(var.private_app_subnet_ids)
 
-  route_table_id = aws_route_table.scale_nat.id
-  subnet_id      = each.value
+  route_table_id = aws_route_table.scale_nat[count.index].id
+  subnet_id      = var.private_app_subnet_ids[count.index]
 }
-
-##############################################################
-# Routing Table/Subnet associations - no external access
-##############################################################
-
-# None
 
 ##############################################################
 # DNS Zones
