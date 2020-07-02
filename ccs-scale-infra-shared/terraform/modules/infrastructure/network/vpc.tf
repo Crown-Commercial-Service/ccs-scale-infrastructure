@@ -227,14 +227,22 @@ resource "aws_internet_gateway" "scale" {
 # Availability Zone A only at the moment (no redundancy)
 ##############################################################
 
-# TODO: Provision multiple based on AZ config
+# Provide a datasource to obtain the subnet's AZ ID for NAT naming
+data "aws_subnet" "public" {
+  for_each = toset(var.public_web_subnet_ids)
+
+  id = each.value
+}
+
 resource "aws_nat_gateway" "scale" {
-  allocation_id = var.eip_id_nat
-  subnet_id     = var.public_web_subnet_ids[0]
+  count = length(var.public_web_subnet_ids)
+
+  allocation_id = var.nat_eip_ids[count.index]
+  subnet_id     = var.public_web_subnet_ids[count.index]
   depends_on    = [aws_internet_gateway.scale]
 
   tags = {
-    Name        = "SCALE:EU2:${upper(var.environment)}:NATGW:EXT"
+    Name        = "SCALE:EU2:${upper(var.environment)}:NAT:${upper(data.aws_subnet.public["${var.public_web_subnet_ids[count.index]}"].availability_zone)}"
     Project     = module.globals.project_name
     Environment = upper(var.environment)
     Cost_Code   = module.globals.project_cost_code
@@ -280,13 +288,20 @@ resource "aws_route_table" "scale_ig" {
   }
 }
 
-# TODO: Provision multiple based on AZ config
 resource "aws_route_table" "scale_nat" {
   vpc_id = var.vpc_id
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.scale.id
+  # Cannot reference the NAT resource as it hasn't been
+  dynamic "route" {
+    # for_each = var.public_web_subnet_ids
+    for_each = aws_nat_gateway.scale
+    iterator = nat_gateway
+
+    content {
+      cidr_block = "0.0.0.0/0"
+      # nat_gateway_id = aws_nat_gateway.scale[route.key].id
+      nat_gateway_id = nat_gateway.value.id
+    }
   }
 
   tags = {
@@ -304,8 +319,10 @@ resource "aws_route_table" "scale_nat" {
 
 # TODO: Provision multiple based on AZ (subnet) config
 resource "aws_route_table_association" "scale_ig" {
+  for_each = toset(var.public_web_subnet_ids)
+
   route_table_id = aws_route_table.scale_ig.id
-  subnet_id      = var.public_web_subnet_ids[0]
+  subnet_id      = each.value
 }
 
 ##############################################################
@@ -314,8 +331,10 @@ resource "aws_route_table_association" "scale_ig" {
 
 # TODO: Provision multiple based on AZ (subnet) config
 resource "aws_route_table_association" "scale_nat" {
+  for_each = toset(var.private_app_subnet_ids)
+
   route_table_id = aws_route_table.scale_nat.id
-  subnet_id      = var.private_app_subnet_ids[0]
+  subnet_id      = each.value
 }
 
 ##############################################################
