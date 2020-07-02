@@ -20,10 +20,6 @@ provider "aws" {
 
 locals {
   environment = "TST"
-
-  # Elastic IPs, provisioned by ccs-scale-bootstrap
-  eip_id_nat = "eipalloc-058c4a8af0cc0883d"
-  eip_id_nlb = "eipalloc-00ea3efb96a3e0231"
 }
 
 data "aws_ssm_parameter" "aws_account_id" {
@@ -34,6 +30,4 @@ module "deploy" {
   source         = "../../modules/configs/deploy-all"
   aws_account_id = data.aws_ssm_parameter.aws_account_id.value
   environment    = local.environment
-  eip_id_nat     = local.eip_id_nat
-  eip_id_nlb     = local.eip_id_nlb
 }
