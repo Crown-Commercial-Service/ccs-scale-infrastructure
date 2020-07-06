@@ -30,10 +30,10 @@ variable "ecr_access_cidr_blocks" {
   type = list(string)
 }
 
-variable "eip_id_nat" {
-  type = string
+variable "nat_eip_ids" {
+  type = list
 }
 
-variable "eip_id_nlb" {
-  type = string
+variable "public_nlb_eip_ids" {
+  type = list
 }
