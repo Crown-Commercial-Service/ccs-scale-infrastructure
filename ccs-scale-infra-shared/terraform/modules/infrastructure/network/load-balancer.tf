@@ -46,10 +46,13 @@ resource "aws_lb" "public" {
   load_balancer_type = "network"
   depends_on         = [aws_internet_gateway.scale]
 
-  subnet_mapping {
-    # TODO: Iterate on subnet IDs (must be hardcoded values)
-    subnet_id     = var.public_web_subnet_ids[0]
-    allocation_id = var.eip_id_nlb
+  dynamic "subnet_mapping" {
+    for_each = var.public_web_subnet_ids
+
+    content {
+      subnet_id     = subnet_mapping.value
+      allocation_id = var.public_nlb_eip_ids[subnet_mapping.key] # key=index
+    }
   }
 
   tags = {

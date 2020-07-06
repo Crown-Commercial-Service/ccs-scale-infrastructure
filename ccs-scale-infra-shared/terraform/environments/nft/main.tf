@@ -20,10 +20,6 @@ provider "aws" {
 
 locals {
   environment = "NFT"
-
-  # Elastic IPs, provisioned by ccs-scale-bootstrap
-  eip_id_nat = "eipalloc-0ebc4100552ab138b"
-  eip_id_nlb = "eipalloc-0bc5b95b763f6bc6a"
 }
 
 data "aws_ssm_parameter" "aws_account_id" {
@@ -34,6 +30,4 @@ module "deploy" {
   source         = "../../modules/configs/deploy-all"
   aws_account_id = data.aws_ssm_parameter.aws_account_id.value
   environment    = local.environment
-  eip_id_nat     = local.eip_id_nat
-  eip_id_nlb     = local.eip_id_nlb
 }

@@ -30,11 +30,3 @@ variable "private_db_subnet_ids" {
 variable "ecr_access_cidr_blocks" {
   type = list(string)
 }
-
-variable "eip_id_nat" {
-  type = string
-}
-
-variable "eip_id_nlb" {
-  type = string
-}

@@ -53,8 +53,6 @@ module "infrastructure" {
   public_web_subnet_ids  = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)
   private_db_subnet_ids  = split(",", data.aws_ssm_parameter.private_db_subnet_ids.value)
   ecr_access_cidr_blocks = flatten([split(",", data.aws_ssm_parameter.cidr_blocks_web.value), split(",", data.aws_ssm_parameter.cidr_blocks_app.value), split(",", data.aws_ssm_parameter.cidr_blocks_db.value)])
-  eip_id_nat             = var.eip_id_nat
-  eip_id_nlb             = var.eip_id_nlb
 }
 
 module "ssm" {
