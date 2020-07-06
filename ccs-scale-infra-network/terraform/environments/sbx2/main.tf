@@ -22,52 +22,33 @@ locals {
   environment    = "SBX2"
   cidr_block_vpc = "192.168.0.0/16"
 
+  # One AZ
   subnet_configs = {
     "public_web" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.31.0/24"
+        "cidr_block" = "192.168.1.0/24"
       }
-      "eu-west-2b" = {
-        "az_id"      = "2b"
-        "cidr_block" = "192.168.34.0/24"
-      }
-      "eu-west-2c" = {
-        "az_id"      = "2c"
-        "cidr_block" = "192.168.37.0/24"
-      }
+      # Additional AZ blocks (maps) go here. No comma separation required.
     }
     "private_app" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.32.0/24"
-      }
-      "eu-west-2b" = {
-        "az_id"      = "2b"
-        "cidr_block" = "192.168.35.0/24"
-      }
-      "eu-west-2c" = {
-        "az_id"      = "2c"
-        "cidr_block" = "192.168.38.0/24"
+        "cidr_block" = "192.168.3.0/24"
       }
     }
     "private_db" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.33.0/24"
+        "cidr_block" = "192.168.5.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.168.36.0/24"
-      }
-      "eu-west-2c" = {
-        "az_id"      = "2c"
-        "cidr_block" = "192.168.39.0/24"
+        "cidr_block" = "192.168.11.0/24"
       }
     }
   }
 }
-
 
 data "aws_ssm_parameter" "aws_account_id" {
   name = "account-id-${lower(local.environment)}"
@@ -90,7 +71,7 @@ module "ssm" {
   private_app_subnet_ids = module.vpc.private_app_subnet_ids
   private_db_subnet_ids  = module.vpc.private_db_subnet_ids
   cidr_block_vpc         = local.cidr_block_vpc
-  cidr_blocks_web        = [local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"], local.subnet_configs["public_web"]["eu-west-2b"]["cidr_block"], local.subnet_configs["public_web"]["eu-west-2c"]["cidr_block"]]
-  cidr_blocks_app        = [local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_app"]["eu-west-2b"]["cidr_block"], local.subnet_configs["private_app"]["eu-west-2c"]["cidr_block"]]
-  cidr_blocks_db         = [local.subnet_configs["private_db"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2b"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2c"]["cidr_block"]]
+  cidr_blocks_web        = [local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"]]
+  cidr_blocks_app        = [local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"]]
+  cidr_blocks_db         = [local.subnet_configs["private_db"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2b"]["cidr_block"]]
 }
