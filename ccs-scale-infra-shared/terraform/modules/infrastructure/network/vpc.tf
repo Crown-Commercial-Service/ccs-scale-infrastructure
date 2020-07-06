@@ -224,7 +224,6 @@ resource "aws_internet_gateway" "scale" {
 
 ##############################################################
 # NAT Gateway for private subnets outbound traffic
-# Availability Zone A only at the moment (no redundancy)
 ##############################################################
 
 # Provide a datasource to obtain the subnet's AZ ID for NAT naming
