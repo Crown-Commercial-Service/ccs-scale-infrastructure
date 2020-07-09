@@ -19,6 +19,7 @@ resource "aws_security_group" "allow_bastion_db_access" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+
   ingress {
     from_port   = 5432
     to_port     = 5432
@@ -26,9 +27,23 @@ resource "aws_security_group" "allow_bastion_db_access" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 7687
+    to_port     = 7687
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 5432
     to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = var.db_cidr_blocks
+  }
+
+  egress {
+    from_port   = 7687
+    to_port     = 7687
     protocol    = "tcp"
     cidr_blocks = var.db_cidr_blocks
   }
