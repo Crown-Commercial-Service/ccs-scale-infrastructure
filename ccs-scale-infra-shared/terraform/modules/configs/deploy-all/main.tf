@@ -73,3 +73,12 @@ module "bastion" {
   subnet_id      = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)[0]
   db_cidr_blocks = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
 }
+
+module "cloudtrail" {
+  source                              = "../../cloudtrail"
+  aws_account_id                      = var.aws_account_id
+  environment                         = var.environment
+  cloudtrail_cw_log_retention_in_days = var.cloudtrail_cw_log_retention_in_days
+  cloudtrail_s3_log_retention_in_days = var.cloudtrail_s3_log_retention_in_days
+  cloudwatch_s3_force_destroy         = var.cloudwatch_s3_force_destroy
+}

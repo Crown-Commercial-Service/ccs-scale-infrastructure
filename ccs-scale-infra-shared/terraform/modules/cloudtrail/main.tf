@@ -3,14 +3,6 @@
 #
 # Cloud Trail and CloudWatch Alarms
 #########################################################
-provider "aws" {
-  profile = "default"
-  region  = "eu-west-2"
-
-  assume_role {
-    role_arn = "arn:aws:iam::${var.aws_account_id}:role/CCS_SCALE_Build"
-  }
-}
 
 locals {
   s3_bucket_name = "scale-${lower(var.environment)}-s3-cloudtrail-logs"
@@ -25,7 +17,7 @@ module "globals" {
 ##########################
 resource "aws_s3_bucket" "cloudtrail" {
   bucket        = local.s3_bucket_name
-  force_destroy = true
+  force_destroy = var.cloudwatch_s3_force_destroy
 
   policy = <<POLICY
 {
@@ -57,6 +49,29 @@ resource "aws_s3_bucket" "cloudtrail" {
     ]
 }
 POLICY
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    id      = "expire-after-${var.cloudtrail_s3_log_retention_in_days}-days"
+    enabled = true
+    expiration {
+      days = var.cloudtrail_s3_log_retention_in_days
+    }
+  }
+
+  tags = {
+    Project     = module.globals.project_name
+    Environment = upper(var.environment)
+    Cost_Code   = module.globals.project_cost_code
+    AppType     = "CLOUDTRAIL"
+  }
 }
 
 ##########################
@@ -64,7 +79,7 @@ POLICY
 ##########################
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "/cloudtrail/${lower(var.environment)}"
-  retention_in_days = 30
+  retention_in_days = var.cloudtrail_cw_log_retention_in_days
 
   tags = {
     Project     = module.globals.project_name
