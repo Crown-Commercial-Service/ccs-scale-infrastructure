@@ -74,6 +74,10 @@ module "bastion" {
   db_cidr_blocks = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
 }
 
+# CloudTrail is not really required in lower enviromnments.
+# We should be able to turn this off easily using the module 'count=0' property when 
+# it becomes available in Terraform 0.13 if required
+# https://www.hashicorp.com/blog/announcing-the-terraform-0-13-beta/
 module "cloudtrail" {
   source                              = "../../cloudtrail"
   aws_account_id                      = var.aws_account_id
