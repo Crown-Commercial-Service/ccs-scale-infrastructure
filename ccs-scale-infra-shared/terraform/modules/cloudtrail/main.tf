@@ -58,6 +58,10 @@ POLICY
     }
   }
 
+  versioning {
+    enabled = true
+  }
+
   lifecycle_rule {
     id      = "expire-after-${var.cloudtrail_s3_log_retention_in_days}-days"
     enabled = true
