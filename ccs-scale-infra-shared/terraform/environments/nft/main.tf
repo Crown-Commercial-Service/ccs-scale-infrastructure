@@ -30,7 +30,7 @@ module "deploy" {
   source                              = "../../modules/configs/deploy-all"
   aws_account_id                      = data.aws_ssm_parameter.aws_account_id.value
   environment                         = local.environment
-  cloudtrail_cw_log_retention_in_days = 30
-  cloudtrail_s3_log_retention_in_days = 30
+  cloudtrail_cw_log_retention_in_days = 90
+  cloudtrail_s3_log_retention_in_days = 2555 #7 years
   cloudwatch_s3_force_destroy         = false
 }
