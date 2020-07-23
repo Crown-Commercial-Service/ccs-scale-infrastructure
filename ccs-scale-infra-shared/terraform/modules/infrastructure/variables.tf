@@ -26,7 +26,3 @@ variable "public_web_subnet_ids" {
 variable "private_db_subnet_ids" {
   type = list(string)
 }
-
-variable "ecr_access_cidr_blocks" {
-  type = list(string)
-}

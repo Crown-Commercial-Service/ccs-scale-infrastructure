@@ -52,7 +52,6 @@ module "infrastructure" {
   private_app_subnet_ids = split(",", data.aws_ssm_parameter.private_app_subnet_ids.value)
   public_web_subnet_ids  = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)
   private_db_subnet_ids  = split(",", data.aws_ssm_parameter.private_db_subnet_ids.value)
-  ecr_access_cidr_blocks = flatten([split(",", data.aws_ssm_parameter.cidr_blocks_web.value), split(",", data.aws_ssm_parameter.cidr_blocks_app.value), split(",", data.aws_ssm_parameter.cidr_blocks_db.value)])
 }
 
 module "ssm" {
@@ -75,7 +74,7 @@ module "bastion" {
 }
 
 # CloudTrail is not really required in lower enviromnments.
-# We should be able to turn this off easily using the module 'count=0' property when 
+# We should be able to turn this off easily using the module 'count=0' property when
 # it becomes available in Terraform 0.13 if required
 # https://www.hashicorp.com/blog/announcing-the-terraform-0-13-beta/
 module "cloudtrail" {
