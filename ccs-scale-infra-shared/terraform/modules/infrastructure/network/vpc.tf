@@ -177,7 +177,7 @@ resource "aws_network_acl" "scale_external" {
   # Allow all outbound traffic on port 443 (from Buyer UI via NAT Gateway to CCS)
   egress {
     protocol   = "tcp"
-    rule_no    = 90
+    rule_no    = 80
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 443
@@ -201,7 +201,7 @@ resource "aws_network_acl" "scale_internal" {
   # Decision Tree Service
   ingress {
     protocol   = "tcp"
-    rule_no    = 20
+    rule_no    = 10
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 9000
@@ -211,7 +211,7 @@ resource "aws_network_acl" "scale_internal" {
   # Agreements Service
   ingress {
     protocol   = "tcp"
-    rule_no    = 30
+    rule_no    = 20
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 9010
@@ -221,7 +221,7 @@ resource "aws_network_acl" "scale_internal" {
   # Guided Match Service
   ingress {
     protocol   = "tcp"
-    rule_no    = 40
+    rule_no    = 30
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 9020
@@ -231,7 +231,7 @@ resource "aws_network_acl" "scale_internal" {
   # Buyer UI
   ingress {
     protocol   = "tcp"
-    rule_no    = 50
+    rule_no    = 40
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 9030
@@ -241,7 +241,7 @@ resource "aws_network_acl" "scale_internal" {
   #Allow inbound traffic from the VPC on port 443 for VPC Link / other AWS services
   ingress {
     protocol   = "tcp"
-    rule_no    = 61
+    rule_no    = 50
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = var.https_port
@@ -251,7 +251,7 @@ resource "aws_network_acl" "scale_internal" {
   # Allow inbound internet traffic on the ephemeral ports (for responses)
   ingress {
     protocol   = "tcp"
-    rule_no    = 70
+    rule_no    = 60
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
@@ -261,7 +261,7 @@ resource "aws_network_acl" "scale_internal" {
   # Allow outbound VPC traffic on the ephemeral ports for responses to internal services
   egress {
     protocol   = "tcp"
-    rule_no    = 80
+    rule_no    = 70
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 1024
@@ -271,7 +271,7 @@ resource "aws_network_acl" "scale_internal" {
   # Allow outbound internet traffic on port 443 (Buyer UI -> NAT / ECR)
   egress {
     protocol   = "tcp"
-    rule_no    = 90
+    rule_no    = 80
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 443
@@ -315,7 +315,7 @@ resource "aws_network_acl" "scale_database" {
   # Inbound from ECR / other AWS services
   ingress {
     protocol   = "tcp"
-    rule_no    = 61
+    rule_no    = 30
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = var.https_port
@@ -325,19 +325,39 @@ resource "aws_network_acl" "scale_database" {
   # Allow inbound traffic from VPC on ephemeral ports for responses from internal / external services
   ingress {
     protocol   = "tcp"
-    rule_no    = 70
+    rule_no    = 40
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 1024
     to_port    = 65535
   }
 
-  # Allow outbound trafficto the VPC on port 443 (ECR)
+  # Allow inbound internet traffic on the ephemeral ports (for responses)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 50
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  # Allow outbound traffic to the VPC on port 443 (ECR)
   egress {
     protocol   = "tcp"
-    rule_no    = 90
+    rule_no    = 60
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 443
+    to_port    = 443
+  }
+
+  # Allow outbound internet traffic on port 443 (ECR)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 70
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
     from_port  = 443
     to_port    = 443
   }
@@ -345,7 +365,7 @@ resource "aws_network_acl" "scale_database" {
   # Allow outbound traffic to the VPC on the ephemeral ports for responses to internal services
   egress {
     protocol   = "tcp"
-    rule_no    = 30
+    rule_no    = 80
     action     = "allow"
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 1024
