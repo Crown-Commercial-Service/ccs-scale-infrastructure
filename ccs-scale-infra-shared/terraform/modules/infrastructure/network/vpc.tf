@@ -184,6 +184,16 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 443
   }
 
+  # Allow outbound traffic to the internet on port 443
+  egress {
+    protocol   = "tcp"
+    rule_no    = 90
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
   tags = {
     Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ACL-EXTERNAL"
     Project     = module.globals.project_name
