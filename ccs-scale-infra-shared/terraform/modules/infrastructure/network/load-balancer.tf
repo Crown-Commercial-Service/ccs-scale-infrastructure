@@ -63,6 +63,54 @@ resource "aws_lb" "public" {
   }
 }
 
+resource "aws_lb" "public_alb" {
+  name               = "SCALE-EU2-${upper(var.environment)}-ALB-EXTERNAL"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = var.public_web_subnet_ids
+  security_groups    = [aws_security_group.public_alb.id]
+  depends_on         = [aws_internet_gateway.scale]
+
+  tags = {
+    Project     = module.globals.project_name
+    Environment = upper(var.environment)
+    Cost_Code   = module.globals.project_cost_code
+    AppType     = "LOADBALANCER"
+  }
+}
+
+resource "aws_security_group" "public_alb" {
+  name                   = "allow_alb_external_cloudfront_only"
+  description            = "Allow ingress from Cloudfront only via update sg lambda"
+  vpc_id                 = var.vpc_id
+  revoke_rules_on_delete = true
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  ingress {
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+  }
+
+  egress {
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+  }
+
+  tags = {
+    Project     = module.globals.project_name
+    Environment = upper(var.environment)
+    Cost_Code   = module.globals.project_cost_code
+    AppType     = "ECS"
+  }
+}
+
 resource "aws_api_gateway_vpc_link" "link" {
   name = "SCALE:EU2:ENV:VPC:Link"
   target_arns = [

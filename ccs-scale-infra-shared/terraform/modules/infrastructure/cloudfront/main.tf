@@ -22,8 +22,10 @@ resource "aws_s3_bucket" "logs" {
 
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
-    domain_name = var.lb_public_dns
-    origin_id   = var.lb_public_dns
+    # domain_name = var.lb_public_dns
+    # origin_id   = var.lb_public_dns
+    domain_name = var.lb_public_alb_dns
+    origin_id   = var.lb_public_alb_dns
 
     custom_origin_config {
       http_port              = 80
@@ -48,7 +50,7 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.lb_public_dns
+    target_origin_id = var.lb_public_alb_dns
 
     forwarded_values {
       query_string = true

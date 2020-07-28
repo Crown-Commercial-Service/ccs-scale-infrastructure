@@ -28,7 +28,8 @@ module "network" {
 }
 
 module "cloudfront" {
-  source        = "./cloudfront"
-  environment   = var.environment
-  lb_public_dns = module.network.lb_public_dns
+  source            = "./cloudfront"
+  environment       = var.environment
+  lb_public_dns     = module.network.lb_public_dns
+  lb_public_alb_dns = module.network.lb_public_alb_dns
 }

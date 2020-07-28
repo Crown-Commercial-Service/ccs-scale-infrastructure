@@ -14,6 +14,10 @@ variable "lb_public_arn" {
   type = string
 }
 
+variable "lb_public_alb_arn" {
+  type = string
+}
+
 variable "vpc_link_id" {
   type = string
 }
