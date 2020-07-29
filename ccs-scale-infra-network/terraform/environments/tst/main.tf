@@ -31,7 +31,7 @@ locals {
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.168.4.0/24"
+        "cidr_block" = "192.170.4.0/24"
       }
       # Additional AZ blocks (maps) go here. No comma separation required.
     }
