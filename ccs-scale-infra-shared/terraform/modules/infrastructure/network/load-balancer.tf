@@ -89,11 +89,25 @@ resource "aws_security_group" "public_alb" {
     create_before_destroy = true
   }
 
+  /*
+  * 52.56.127.0/25
+  * 3.10.17.128/25
+  * 3.11.53.0/24
+  */
   ingress {
-    protocol    = -1
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    from_port   = 0
-    to_port     = 0
+    # cidr_blocks = ["52.56.127.0/25", "3.10.17.128/25", "3.11.53.0/24", "18.200.212.0/23", "52.212.248.0/26", "52.47.139.0/24", "15.188.184.0/24"]
+    from_port = 80
+    to_port   = 80
+  }
+
+  ingress {
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    # cidr_blocks = ["52.56.127.0/25", "3.10.17.128/25", "3.11.53.0/24", "18.200.212.0/23", "52.212.248.0/26", "52.47.139.0/24", "15.188.184.0/24"]
+    from_port = 443
+    to_port   = 443
   }
 
   egress {

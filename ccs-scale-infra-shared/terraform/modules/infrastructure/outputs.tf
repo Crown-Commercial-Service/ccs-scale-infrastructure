@@ -29,6 +29,10 @@ output "lb_private_db_dns" {
   value = module.network.lb_private_db_dns
 }
 
+output "cloudfront_id" {
+  value = module.cloudfront.cloudfront_id
+}
+
 /*
 output "target_group_9000_arn" {
   value = module.network.target_group_9000_arn

@@ -7,6 +7,12 @@ module "globals" {
   source = "../../globals"
 }
 
+resource "random_password" "cloudfront_id" {
+  length  = 16
+  special = false
+  # override_special = "_%@"
+}
+
 resource "aws_s3_bucket" "logs" {
   bucket        = "scale-${lower(var.environment)}-s3-cloudfront-logs"
   acl           = "private"
@@ -32,6 +38,11 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
       https_port             = 443
       origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]
+    }
+
+    custom_header {
+      name  = "CloudFrontID"
+      value = random_password.cloudfront_id.result
     }
   }
 

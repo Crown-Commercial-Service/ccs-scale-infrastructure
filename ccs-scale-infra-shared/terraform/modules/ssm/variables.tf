@@ -29,3 +29,7 @@ variable "lb_private_dns" {
 variable "lb_private_db_dns" {
   type = string
 }
+
+variable "cloudfront_id" {
+  type = string
+}
