@@ -35,15 +35,23 @@ resource "aws_vpc" "SCALE-Services" {
   }
 }
 
+# This special resource instructs TF to 'adopt' the default NACL and strip it
+# of its permissive default ruleset
+resource "aws_default_network_acl" "default" {
+  default_network_acl_id = aws_vpc.SCALE-Services.default_network_acl_id
+
+  # no rules defined, deny all traffic in this ACL
+}
+
 ##############################################################
 # Public Subnets
 ##############################################################
 resource "aws_subnet" "SCALE-AZ-WEB-Public" {
   for_each = var.subnet_configs["public_web"]
 
-  vpc_id            = aws_vpc.SCALE-Services.id
-  cidr_block        = each.value["cidr_block"]
-  availability_zone = each.key
+  vpc_id                  = aws_vpc.SCALE-Services.id
+  cidr_block              = each.value["cidr_block"]
+  availability_zone       = each.key
   map_public_ip_on_launch = true
 
   tags = {
