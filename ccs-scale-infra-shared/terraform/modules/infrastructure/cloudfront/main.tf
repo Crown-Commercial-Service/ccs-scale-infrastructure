@@ -7,6 +7,12 @@ module "globals" {
   source = "../../globals"
 }
 
+resource "random_password" "cloudfront_id" {
+  length  = 16
+  special = false
+  # override_special = "_%@"
+}
+
 resource "aws_s3_bucket" "logs" {
   bucket        = "scale-${lower(var.environment)}-s3-cloudfront-logs"
   acl           = "private"
@@ -22,14 +28,21 @@ resource "aws_s3_bucket" "logs" {
 
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
-    domain_name = var.lb_public_dns
-    origin_id   = var.lb_public_dns
+    # domain_name = var.lb_public_dns
+    # origin_id   = var.lb_public_dns
+    domain_name = var.lb_public_alb_dns
+    origin_id   = var.lb_public_alb_dns
 
     custom_origin_config {
       http_port              = 80
       https_port             = 443
       origin_protocol_policy = "http-only"
       origin_ssl_protocols   = ["TLSv1.2"]
+    }
+
+    custom_header {
+      name  = "CloudFrontID"
+      value = random_password.cloudfront_id.result
     }
   }
 
@@ -48,7 +61,7 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.lb_public_dns
+    target_origin_id = var.lb_public_alb_dns
 
     forwarded_values {
       query_string = true

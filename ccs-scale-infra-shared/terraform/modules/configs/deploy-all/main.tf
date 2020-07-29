@@ -60,9 +60,11 @@ module "ssm" {
   lb_private_arn    = module.infrastructure.lb_private_arn
   lb_private_db_arn = module.infrastructure.lb_private_db_arn
   lb_public_arn     = module.infrastructure.lb_public_arn
+  lb_public_alb_arn = module.infrastructure.lb_public_alb_arn
   vpc_link_id       = module.infrastructure.vpc_link_id
   lb_private_dns    = module.infrastructure.lb_private_dns
   lb_private_db_dns = module.infrastructure.lb_private_db_dns
+  cloudfront_id     = module.infrastructure.cloudfront_id
 }
 
 module "bastion" {
