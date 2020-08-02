@@ -59,3 +59,10 @@ resource "aws_ssm_parameter" "cloudfront_id" {
   value     = var.cloudfront_id
   overwrite = true
 }
+
+resource "aws_ssm_parameter" "lb_public_alb_listner_arn" {
+  name      = "${lower(var.environment)}-lb-public-alb-listner-arn"
+  type      = "SecureString"
+  value     = var.lb_public_alb_listner_arn
+  overwrite = true
+}

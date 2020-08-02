@@ -33,6 +33,11 @@ output "cloudfront_id" {
   value = module.cloudfront.cloudfront_id
 }
 
+output "lb_public_alb_listner_arn" {
+  value = module.network.lb_public_alb_listner_arn
+}
+
+
 /*
 output "target_group_9000_arn" {
   value = module.network.target_group_9000_arn

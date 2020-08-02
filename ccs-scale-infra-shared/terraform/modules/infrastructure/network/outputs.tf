@@ -33,3 +33,7 @@ output "lb_public_dns" {
 output "lb_public_alb_dns" {
   value = aws_lb.public_alb.dns_name
 }
+
+output "lb_public_alb_listner_arn" {
+  value = aws_lb_listener.port_80.arn
+}
