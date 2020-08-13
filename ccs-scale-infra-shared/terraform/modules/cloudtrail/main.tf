@@ -16,7 +16,7 @@ module "globals" {
 # CloudTrail log bucket
 ##########################
 resource "aws_s3_bucket" "cloudtrail" {
-  bucket        = local.s3_bucket_name
+  bucket_prefix = local.s3_bucket_name
   force_destroy = var.cloudwatch_s3_force_destroy
 
   policy = <<POLICY
