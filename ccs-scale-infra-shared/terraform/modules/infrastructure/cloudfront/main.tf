@@ -7,6 +7,15 @@ module "globals" {
   source = "../../globals"
 }
 
+# Aliased provider for us-east-1 region for use by specific resources (e.g. ACM certificates)
+provider "aws" {
+  alias  = "nvirginia"
+  region = "us-east-1"
+  assume_role {
+    role_arn = "arn:aws:iam::${var.aws_account_id}:role/CCS_SCALE_Build"
+  }
+}
+
 resource "random_password" "cloudfront_id" {
   length  = 16
   special = false
@@ -32,6 +41,17 @@ resource "aws_s3_bucket" "logs" {
     Cost_Code   = module.globals.project_cost_code
     AppType     = "S3"
   }
+}
+
+# Data sources for the CDN custom domain name and SSL certificate
+data "aws_ssm_parameter" "hosted_zone_name_cdn" {
+  name = "${lower(var.environment)}-hosted-zone-name-cdn"
+}
+
+data "aws_acm_certificate" "cdn" {
+  domain   = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  statuses = ["ISSUED"]
+  provider = aws.nvirginia
 }
 
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
@@ -98,6 +118,31 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = false
+    acm_certificate_arn            = data.aws_acm_certificate.cdn.arn
+    minimum_protocol_version       = "TLSv1.2_2019"
+    ssl_support_method             = "sni-only"
+  }
+
+  aliases = [data.aws_ssm_parameter.hosted_zone_name_cdn.value]
+}
+
+##############################################################
+# Route53 CDN Alias ('A') record
+##############################################################
+data "aws_route53_zone" "cdn" {
+  name         = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  private_zone = false
+}
+
+resource "aws_route53_record" "cdn_alias" {
+  zone_id = data.aws_route53_zone.cdn.zone_id
+  name    = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.fat_buyer_ui_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.fat_buyer_ui_distribution.hosted_zone_id
+    evaluate_target_health = true
   }
 }
