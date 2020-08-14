@@ -103,14 +103,13 @@ resource "aws_network_acl" "scale_external" {
   subnet_ids = var.public_web_subnet_ids
 
   # Allow all inbound traffic on the external load balancer listener port
-  # TODO: Remove as part of SSL lockdown
   ingress {
     protocol   = "tcp"
     rule_no    = 10
     action     = "allow"
     cidr_block = "0.0.0.0/0"
-    from_port  = var.http_port
-    to_port    = var.http_port
+    from_port  = var.https_port
+    to_port    = var.https_port
   }
 
   # Allow inbound traffic to NAT from instances within the VPC

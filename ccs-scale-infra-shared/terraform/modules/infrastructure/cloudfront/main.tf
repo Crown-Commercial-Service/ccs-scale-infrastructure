@@ -43,11 +43,16 @@ resource "aws_s3_bucket" "logs" {
   }
 }
 
-# Data sources for the CDN custom domain name and SSL certificate
+# CDN+ALB custom domain names
 data "aws_ssm_parameter" "hosted_zone_name_cdn" {
   name = "${lower(var.environment)}-hosted-zone-name-cdn"
 }
 
+data "aws_ssm_parameter" "hosted_zone_name_alb" {
+  name = "${lower(var.environment)}-hosted-zone-name-alb"
+}
+
+# CDN ACM SSL certificate
 data "aws_acm_certificate" "cdn" {
   domain   = data.aws_ssm_parameter.hosted_zone_name_cdn.value
   statuses = ["ISSUED"]
@@ -56,15 +61,13 @@ data "aws_acm_certificate" "cdn" {
 
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
-    # domain_name = var.lb_public_dns
-    # origin_id   = var.lb_public_dns
-    domain_name = var.lb_public_alb_dns
-    origin_id   = var.lb_public_alb_dns
+    domain_name = data.aws_ssm_parameter.hosted_zone_name_alb.value
+    origin_id   = data.aws_ssm_parameter.hosted_zone_name_alb.value
 
     custom_origin_config {
       http_port              = 80
       https_port             = 443
-      origin_protocol_policy = "http-only"
+      origin_protocol_policy = "https-only"
       origin_ssl_protocols   = ["TLSv1.2"]
     }
 
@@ -89,7 +92,7 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.lb_public_alb_dns
+    target_origin_id = data.aws_ssm_parameter.hosted_zone_name_alb.value
 
     forwarded_values {
       query_string = true
