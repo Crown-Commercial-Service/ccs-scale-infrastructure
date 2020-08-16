@@ -13,3 +13,7 @@ variable "subnet_id" {
 variable "db_cidr_blocks" {
   type = list(string)
 }
+
+variable "bastion_kms_key_id" {
+  type = string
+}

@@ -71,6 +71,11 @@ resource "aws_instance" "bastion_host" {
   vpc_security_group_ids      = [aws_security_group.allow_bastion_db_access.id]
   associate_public_ip_address = true
 
+  root_block_device {
+    encrypted  = true
+    kms_key_id = var.bastion_kms_key_id
+  }
+
   tags = {
     Name        = "SCALE-EU2-${upper(var.environment)}-EC2-BASTION"
     Project     = module.globals.project_name
