@@ -6,10 +6,6 @@ output "lb_private_db_arn" {
   value = aws_lb.private_db.arn
 }
 
-output "lb_public_arn" {
-  value = aws_lb.public.arn
-}
-
 output "lb_public_alb_arn" {
   value = aws_lb.public_alb.arn
 }
@@ -24,10 +20,6 @@ output "lb_private_dns" {
 
 output "lb_private_db_dns" {
   value = aws_lb.private_db.dns_name
-}
-
-output "lb_public_dns" {
-  value = aws_lb.public.dns_name
 }
 
 output "lb_public_alb_dns" {
