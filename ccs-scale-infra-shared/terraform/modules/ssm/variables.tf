@@ -10,10 +10,6 @@ variable "lb_private_db_arn" {
   type = string
 }
 
-variable "lb_public_arn" {
-  type = string
-}
-
 variable "lb_public_alb_arn" {
   type = string
 }

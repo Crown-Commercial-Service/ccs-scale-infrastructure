@@ -45,29 +45,6 @@ resource "aws_lb" "private_db" {
   }
 }
 
-resource "aws_lb" "public" {
-  name               = "SCALE-EU2-${upper(var.environment)}-NLB-EXTERNAL"
-  internal           = false
-  load_balancer_type = "network"
-  depends_on         = [aws_internet_gateway.scale]
-
-  dynamic "subnet_mapping" {
-    for_each = var.public_web_subnet_ids
-
-    content {
-      subnet_id     = subnet_mapping.value
-      allocation_id = var.public_nlb_eip_ids[subnet_mapping.key] # key=index
-    }
-  }
-
-  tags = {
-    Project     = module.globals.project_name
-    Environment = upper(var.environment)
-    Cost_Code   = module.globals.project_cost_code
-    AppType     = "LOADBALANCER"
-  }
-}
-
 resource "aws_lb" "public_alb" {
   name               = "SCALE-EU2-${upper(var.environment)}-ALB-EXTERNAL"
   internal           = false
