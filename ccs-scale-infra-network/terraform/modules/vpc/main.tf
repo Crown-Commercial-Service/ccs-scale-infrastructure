@@ -43,6 +43,14 @@ resource "aws_default_network_acl" "default" {
   # no rules defined, deny all traffic in this ACL
 }
 
+# This special resource instructs TF to 'adopt' the default Security Group and strip it
+# of its permissive default ruleset
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.SCALE-Services.id
+
+  # no rules defined, deny all traffic in this ACL
+}
+
 ##############################################################
 # Public Subnets
 ##############################################################
