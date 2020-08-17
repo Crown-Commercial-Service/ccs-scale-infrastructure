@@ -9,10 +9,6 @@ output "lb_private_db_arn" {
   value = module.network.lb_private_db_arn
 }
 
-output "lb_public_arn" {
-  value = module.network.lb_public_arn
-}
-
 output "lb_public_alb_arn" {
   value = module.network.lb_public_alb_arn
 }

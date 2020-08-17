@@ -7,7 +7,6 @@ provider "aws" {
   }
 }
 
-
 data "aws_ssm_parameter" "nat_eip_ids" {
   name = "${lower(var.environment)}-eip-ids-nat-gateway"
 }
@@ -29,7 +28,7 @@ module "network" {
 
 module "cloudfront" {
   source            = "./cloudfront"
+  aws_account_id    = var.aws_account_id
   environment       = var.environment
-  lb_public_dns     = module.network.lb_public_dns
   lb_public_alb_dns = module.network.lb_public_alb_dns
 }

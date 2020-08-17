@@ -18,13 +18,6 @@ resource "aws_ssm_parameter" "lb_private_db_arn" {
   overwrite = true
 }
 
-resource "aws_ssm_parameter" "lb_public_arn" {
-  name      = "${lower(var.environment)}-lb-public-arn"
-  type      = "String"
-  value     = var.lb_public_arn
-  overwrite = true
-}
-
 resource "aws_ssm_parameter" "lb_public_alb_arn" {
   name      = "${lower(var.environment)}-lb-public-alb-arn"
   type      = "String"

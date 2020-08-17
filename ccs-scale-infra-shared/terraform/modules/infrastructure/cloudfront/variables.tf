@@ -1,8 +1,8 @@
-variable "environment" {
+variable "aws_account_id" {
   type = string
 }
 
-variable "lb_public_dns" {
+variable "environment" {
   type = string
 }
 
