@@ -247,6 +247,16 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 9030
   }
 
+  # Spree Backend NLB listener
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 41
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 80
+    to_port    = 80
+  }
+
   #Allow inbound traffic from the VPC on port 443 for VPC Link / other AWS services
   ingress {
     protocol   = "tcp"
