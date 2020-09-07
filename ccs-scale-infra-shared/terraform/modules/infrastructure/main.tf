@@ -27,8 +27,9 @@ module "network" {
 }
 
 module "cloudfront" {
-  source            = "./cloudfront"
-  aws_account_id    = var.aws_account_id
-  environment       = var.environment
-  lb_public_alb_dns = module.network.lb_public_alb_dns
+  source                              = "./cloudfront"
+  aws_account_id                      = var.aws_account_id
+  environment                         = var.environment
+  lb_public_alb_dns                   = module.network.lb_public_alb_dns
+  cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
 }

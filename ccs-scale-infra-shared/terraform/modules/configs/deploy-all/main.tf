@@ -50,13 +50,14 @@ data "aws_ssm_parameter" "bastion_kms_key_id" {
 }
 
 module "infrastructure" {
-  source                 = "../../infrastructure"
-  aws_account_id         = var.aws_account_id
-  environment            = var.environment
-  vpc_id                 = data.aws_ssm_parameter.vpc_id.value
-  private_app_subnet_ids = split(",", data.aws_ssm_parameter.private_app_subnet_ids.value)
-  public_web_subnet_ids  = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)
-  private_db_subnet_ids  = split(",", data.aws_ssm_parameter.private_db_subnet_ids.value)
+  source                              = "../../infrastructure"
+  aws_account_id                      = var.aws_account_id
+  environment                         = var.environment
+  vpc_id                              = data.aws_ssm_parameter.vpc_id.value
+  private_app_subnet_ids              = split(",", data.aws_ssm_parameter.private_app_subnet_ids.value)
+  public_web_subnet_ids               = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)
+  private_db_subnet_ids               = split(",", data.aws_ssm_parameter.private_db_subnet_ids.value)
+  cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
 }
 
 module "ssm" {

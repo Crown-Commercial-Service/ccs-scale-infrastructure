@@ -33,4 +33,5 @@ module "deploy" {
   cloudtrail_cw_log_retention_in_days = 90
   cloudtrail_s3_log_retention_in_days = 2555 #7 years
   cloudwatch_s3_force_destroy         = false
+  cloudfront_s3_log_retention_in_days = 2555 #7 years
 }
