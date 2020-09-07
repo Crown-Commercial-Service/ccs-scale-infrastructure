@@ -27,11 +27,42 @@ resource "aws_s3_bucket" "logs" {
   acl           = "private"
   force_destroy = var.force_destroy_cloudfront_logs_bucket
 
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "*",
+            "Resource": "arn:aws:s3:::scale-${lower(var.environment)}-s3-cloudfront-logs/*",
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
+POLICY
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
         sse_algorithm = "AES256"
       }
+    }
+  }
+
+  versioning {
+    enabled = true
+  }
+
+  lifecycle_rule {
+    id      = "expire-after-${var.cloudfront_s3_log_retention_in_days}-days"
+    enabled = true
+    expiration {
+      days = var.cloudfront_s3_log_retention_in_days
     }
   }
 

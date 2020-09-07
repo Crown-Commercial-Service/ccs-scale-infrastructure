@@ -26,3 +26,7 @@ variable "public_web_subnet_ids" {
 variable "private_db_subnet_ids" {
   type = list(string)
 }
+
+variable "cloudfront_s3_log_retention_in_days" {
+  type = number
+}
