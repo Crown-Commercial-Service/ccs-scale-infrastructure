@@ -45,6 +45,17 @@ resource "aws_s3_bucket" "cloudtrail" {
                     "s3:x-amz-acl": "bucket-owner-full-control"
                 }
             }
+        },
+        {
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "*",
+            "Resource": "arn:aws:s3:::${local.s3_bucket_name}/*",
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
         }
     ]
 }
