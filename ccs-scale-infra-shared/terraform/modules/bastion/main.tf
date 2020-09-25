@@ -16,23 +16,10 @@ resource "aws_security_group" "allow_bastion_db_access" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.cidr_blocks_allowed_external
   }
 
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 7687
-    to_port     = 7687
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
+  # For connection to Postgres and Neo4j
   egress {
     from_port   = 5432
     to_port     = 5432

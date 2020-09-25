@@ -17,3 +17,7 @@ variable "db_cidr_blocks" {
 variable "bastion_kms_key_id" {
   type = string
 }
+
+variable "cidr_blocks_allowed_external" {
+  type = list
+}
