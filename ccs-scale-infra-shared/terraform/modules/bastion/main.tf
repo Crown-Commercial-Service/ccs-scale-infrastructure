@@ -63,6 +63,10 @@ resource "aws_security_group" "allow_bastion_db_access" {
   }
 }
 
+data "template_file" "init" {
+  template = file("${path.module}/init.sh")
+}
+
 resource "aws_instance" "bastion_host" {
   ami                         = "ami-0be057a22c63962cb"
   instance_type               = "t2.micro"
@@ -70,6 +74,7 @@ resource "aws_instance" "bastion_host" {
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.allow_bastion_db_access.id]
   associate_public_ip_address = true
+  user_data                   = data.template_file.init.rendered
 
   root_block_device {
     encrypted  = true
