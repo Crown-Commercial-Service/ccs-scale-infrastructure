@@ -49,6 +49,10 @@ data "aws_ssm_parameter" "bastion_kms_key_id" {
   name = "${lower(var.environment)}-bastion-encryption-key"
 }
 
+data "aws_ssm_parameter" "cidr_blocks_allowed_external" {
+  name = "${lower(var.environment)}-cidr-blocks-external-allowed"
+}
+
 module "infrastructure" {
   source                              = "../../infrastructure"
   aws_account_id                      = var.aws_account_id
@@ -73,12 +77,13 @@ module "ssm" {
 }
 
 module "bastion" {
-  source             = "../../bastion"
-  environment        = var.environment
-  vpc_id             = data.aws_ssm_parameter.vpc_id.value
-  subnet_id          = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)[0]
-  db_cidr_blocks     = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
-  bastion_kms_key_id = data.aws_ssm_parameter.bastion_kms_key_id.value
+  source                       = "../../bastion"
+  environment                  = var.environment
+  vpc_id                       = data.aws_ssm_parameter.vpc_id.value
+  subnet_id                    = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)[0]
+  db_cidr_blocks               = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
+  bastion_kms_key_id           = data.aws_ssm_parameter.bastion_kms_key_id.value
+  cidr_blocks_allowed_external = split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external.value)
 }
 
 # CloudTrail is not really required in lower enviromnments.
