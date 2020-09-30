@@ -132,6 +132,17 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 65535
   }
 
+  # Allow inbound traffic on ports 587 for sendgrid response
+  # (TODO: Why is this necessary / not on the ephemeral range?)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 31
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 587
+    to_port    = 587
+  }
+
   # Allow all inbound traffic on the SSH port (Bastion host)
   ingress {
     protocol   = "tcp"
@@ -191,6 +202,16 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = "0.0.0.0/0"
     from_port  = 80
     to_port    = 80
+  }
+
+  # Allow outbound internet traffic on port 587 (NAT -> SendGrid)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 587
+    to_port    = 587
   }
 
   tags = {
@@ -257,7 +278,7 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 80
   }
 
-  #Allow inbound traffic from the VPC on port 443 for VPC Link / other AWS services
+  # Allow inbound traffic from the VPC on port 443 for VPC Link / other AWS services
   ingress {
     protocol   = "tcp"
     rule_no    = 50
@@ -295,6 +316,16 @@ resource "aws_network_acl" "scale_internal" {
     cidr_block = "0.0.0.0/0"
     from_port  = 443
     to_port    = 443
+  }
+
+  # Allow outbound internet traffic on port 587 (Spree -> NAT)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 90
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 587
+    to_port    = 587
   }
 
   tags = {
