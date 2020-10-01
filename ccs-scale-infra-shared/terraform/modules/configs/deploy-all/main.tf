@@ -57,6 +57,10 @@ data "aws_ssm_parameter" "cidr_blocks_allowed_external_spark" {
   name = "${lower(var.environment)}-cidr-blocks-allowed-external-spark"
 }
 
+data "aws_ssm_parameter" "cidr_blocks_allowed_external_cognizant" {
+  name = "${lower(var.environment)}-cidr-blocks-allowed-external-cognizant"
+}
+
 module "infrastructure" {
   source                              = "../../infrastructure"
   aws_account_id                      = var.aws_account_id
@@ -87,7 +91,7 @@ module "bastion" {
   subnet_id                    = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)[0]
   db_cidr_blocks               = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
   bastion_kms_key_id           = data.aws_ssm_parameter.bastion_kms_key_id.value
-  cidr_blocks_allowed_external = concat(split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_ccs.value), split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_spark.value))
+  cidr_blocks_allowed_external = concat(split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_ccs.value), split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_spark.value), split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_cognizant.value))
 }
 
 # CloudTrail is not really required in lower enviromnments.
