@@ -49,8 +49,23 @@ data "aws_ssm_parameter" "bastion_kms_key_id" {
   name = "${lower(var.environment)}-bastion-encryption-key"
 }
 
-data "aws_ssm_parameter" "cidr_blocks_allowed_external" {
-  name = "${lower(var.environment)}-cidr-blocks-external-allowed"
+data "aws_ssm_parameter" "cidr_blocks_allowed_external_ccs" {
+  name = "${lower(var.environment)}-cidr-blocks-allowed-external-ccs"
+}
+
+data "aws_ssm_parameter" "cidr_blocks_allowed_external_spark" {
+  name = "${lower(var.environment)}-cidr-blocks-allowed-external-spark"
+}
+
+data "aws_ssm_parameter" "cidr_blocks_allowed_external_cognizant" {
+  name = "${lower(var.environment)}-cidr-blocks-allowed-external-cognizant"
+}
+
+locals {
+  # Normalised CIDR blocks (accounting for 'none' i.e. "-" as value in SSM parameter)
+  cidr_blocks_allowed_external_ccs       = data.aws_ssm_parameter.cidr_blocks_allowed_external_ccs.value != "-" ? split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_ccs.value) : []
+  cidr_blocks_allowed_external_spark     = data.aws_ssm_parameter.cidr_blocks_allowed_external_spark.value != "-" ? split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_spark.value) : []
+  cidr_blocks_allowed_external_cognizant = data.aws_ssm_parameter.cidr_blocks_allowed_external_cognizant.value != "-" ? split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_cognizant.value) : []
 }
 
 module "infrastructure" {
@@ -83,7 +98,7 @@ module "bastion" {
   subnet_id                    = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)[0]
   db_cidr_blocks               = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
   bastion_kms_key_id           = data.aws_ssm_parameter.bastion_kms_key_id.value
-  cidr_blocks_allowed_external = split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external.value)
+  cidr_blocks_allowed_external = concat(local.cidr_blocks_allowed_external_ccs, local.cidr_blocks_allowed_external_spark, local.cidr_blocks_allowed_external_cognizant)
 }
 
 # CloudTrail is not really required in lower enviromnments.
