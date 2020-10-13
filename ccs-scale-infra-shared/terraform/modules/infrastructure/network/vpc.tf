@@ -153,6 +153,17 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 22
   }
 
+  # Allow inbound traffic on ports 80 for HTTP response
+  # (TODO: Why is this necessary / not on the ephemeral range?)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 41
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 80
+    to_port    = 80
+  }
+
   # Allow outbound traffic to the VPC on port 443
   egress {
     protocol   = "tcp"
@@ -326,6 +337,16 @@ resource "aws_network_acl" "scale_internal" {
     cidr_block = "0.0.0.0/0"
     from_port  = 587
     to_port    = 587
+  }
+
+  # Allow outbound internet traffic on port 80 (Buyer UI -> CNET)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
   }
 
   tags = {
