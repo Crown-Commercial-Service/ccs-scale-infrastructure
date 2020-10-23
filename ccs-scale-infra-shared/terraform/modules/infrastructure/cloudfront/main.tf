@@ -90,6 +90,17 @@ data "aws_acm_certificate" "cdn" {
   provider = aws.nvirginia
 }
 
+##############################################################
+# Lambda@Edge functions
+##############################################################
+module "functions" {
+  source         = "./functions"
+  aws_account_id = var.aws_account_id
+}
+
+##############################################################
+# Cloudfront distribution
+##############################################################
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
     domain_name = data.aws_ssm_parameter.hosted_zone_name_alb.value
@@ -130,6 +141,12 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
       cookies {
         forward = "all"
       }
+    }
+
+    lambda_function_association {
+      event_type   = "origin-response"
+      lambda_arn   = module.functions.add_security_headers_function_qarn
+      include_body = false
     }
 
     viewer_protocol_policy = "https-only"
