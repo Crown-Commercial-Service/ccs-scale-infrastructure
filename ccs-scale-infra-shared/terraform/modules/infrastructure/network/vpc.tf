@@ -15,6 +15,14 @@ data "aws_vpc" "scale" {
   id = var.vpc_id
 }
 
+##############################################################
+# VPC Endpoints (AWS PrivateLink)
+#
+# These allow private communication between instances or
+# containers within the VPC to ECR, ECS, S3, CW and API gateway
+# services without the need for traffic to route via the Internet
+#
+##############################################################
 resource "aws_vpc_endpoint" "vpc_endpoint_ecr" {
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.eu-west-2.ecr.dkr"
@@ -29,6 +37,29 @@ resource "aws_vpc_endpoint" "vpc_endpoint_ecr" {
   private_dns_enabled = true
 
   tags = {
+    Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ENDPOINT-ECR"
+    Project     = module.globals.project_name
+    Environment = upper(var.environment)
+    Cost_Code   = module.globals.project_cost_code
+    AppType     = "NETWORK"
+  }
+}
+
+resource "aws_vpc_endpoint" "api_gateway" {
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.eu-west-2.execute-api"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.allow_inbound_https.id
+  ]
+
+  # Set to whichever subnet group spans the most AZs
+  subnet_ids          = var.private_db_subnet_ids
+  private_dns_enabled = true
+
+  tags = {
+    Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ENDPOINT-APIG"
     Project     = module.globals.project_name
     Environment = upper(var.environment)
     Cost_Code   = module.globals.project_cost_code
@@ -50,6 +81,7 @@ resource "aws_vpc_endpoint" "vpc_endpoint_cloudwatch" {
   private_dns_enabled = true
 
   tags = {
+    Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ENDPOINT-CW"
     Project     = module.globals.project_name
     Environment = upper(var.environment)
     Cost_Code   = module.globals.project_cost_code
@@ -67,6 +99,7 @@ resource "aws_vpc_endpoint" "vpc_endpoint_s3" {
   ]
 
   tags = {
+    Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ENDPOINT-S3"
     Project     = module.globals.project_name
     Environment = upper(var.environment)
     Cost_Code   = module.globals.project_cost_code
@@ -83,7 +116,7 @@ resource "aws_security_group" "allow_inbound_https" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = tolist([data.aws_vpc.scale.cidr_block])
+    cidr_blocks = [data.aws_vpc.scale.cidr_block]
   }
 
   tags = {
