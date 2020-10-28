@@ -27,28 +27,28 @@ locals {
     "public_web" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.1.0/24"
+        "cidr_block" = "192.168.11.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.168.4.0/24"
+        "cidr_block" = "192.168.14.0/24"
       }
       # Additional AZ blocks (maps) go here. No comma separation required.
     }
     "private_app" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.3.0/24"
+        "cidr_block" = "192.168.12.0/24"
       }
     }
     "private_db" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.5.0/24"
+        "cidr_block" = "192.168.13.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.168.11.0/24"
+        "cidr_block" = "192.168.16.0/24"
       }
     }
   }
