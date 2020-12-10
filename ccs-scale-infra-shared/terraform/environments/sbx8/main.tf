@@ -1,12 +1,12 @@
 #########################################################
-# Environment: SBX6
+# Environment: SBX8
 #
 # Deploy SCALE resources
 #########################################################
 terraform {
   backend "s3" {
     bucket         = "scale-terraform-state"
-    key            = "ccs-scale-infra-shared-sbx6"
+    key            = "ccs-scale-infra-shared-sbx8"
     region         = "eu-west-2"
     dynamodb_table = "scale_terraform_state_lock"
     encrypt        = true
@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 locals {
-  environment = "SBX6"
+  environment = "SBX8"
 }
 
 data "aws_ssm_parameter" "aws_account_id" {
