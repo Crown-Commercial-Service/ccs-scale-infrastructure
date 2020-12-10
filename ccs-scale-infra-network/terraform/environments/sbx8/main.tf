@@ -1,12 +1,12 @@
 #########################################################
-# Environment: SBX6
+# Environment: SBX8
 #
 # Deploy SCALE resources
 #########################################################
 terraform {
   backend "s3" {
     bucket         = "scale-terraform-state"
-    key            = "ccs-scale-infra-network-sbx6"
+    key            = "ccs-scale-infra-network-sbx8"
     region         = "eu-west-2"
     dynamodb_table = "scale_terraform_state_lock"
     encrypt        = true
@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 locals {
-  environment    = "SBX6"
+  environment    = "SBX8"
   cidr_block_vpc = "192.168.0.0/16"
 
   # One AZ
@@ -29,22 +29,26 @@ locals {
         "az_id"      = "2a"
         "cidr_block" = "192.168.1.0/24"
       }
+      "eu-west-2b" = {
+        "az_id"      = "2b"
+        "cidr_block" = "192.168.5.0/24"
+      }
       # Additional AZ blocks (maps) go here. No comma separation required.
     }
     "private_app" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.3.0/24"
+        "cidr_block" = "192.168.2.0/24"
       }
     }
     "private_db" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
-        "cidr_block" = "192.168.5.0/24"
+        "cidr_block" = "192.168.3.0/24"
       }
       "eu-west-2b" = {
         "az_id"      = "2b"
-        "cidr_block" = "192.168.11.0/24"
+        "cidr_block" = "192.168.7.0/24"
       }
     }
   }
