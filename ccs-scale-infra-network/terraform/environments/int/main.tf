@@ -22,7 +22,6 @@ locals {
   environment    = "INT"
   cidr_block_vpc = "192.168.0.0/16"
 
-  # One AZ
   subnet_configs = {
     "public_web" = {
       "eu-west-2a" = {
@@ -33,12 +32,15 @@ locals {
         "az_id"      = "2b"
         "cidr_block" = "192.168.14.0/24"
       }
-      # Additional AZ blocks (maps) go here. No comma separation required.
     }
     "private_app" = {
       "eu-west-2a" = {
         "az_id"      = "2a"
         "cidr_block" = "192.168.12.0/24"
+      }
+      "eu-west-2b" = {
+        "az_id"      = "2b"
+        "cidr_block" = "192.168.15.0/24"
       }
     }
     "private_db" = {
@@ -75,7 +77,7 @@ module "ssm" {
   private_app_subnet_ids = module.vpc.private_app_subnet_ids
   private_db_subnet_ids  = module.vpc.private_db_subnet_ids
   cidr_block_vpc         = local.cidr_block_vpc
-  cidr_blocks_web        = [local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"]]
-  cidr_blocks_app        = [local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"]]
+  cidr_blocks_web        = [local.subnet_configs["public_web"]["eu-west-2a"]["cidr_block"], local.subnet_configs["public_web"]["eu-west-2b"]["cidr_block"]]
+  cidr_blocks_app        = [local.subnet_configs["private_app"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_app"]["eu-west-2b"]["cidr_block"]]
   cidr_blocks_db         = [local.subnet_configs["private_db"]["eu-west-2a"]["cidr_block"], local.subnet_configs["private_db"]["eu-west-2b"]["cidr_block"]]
 }
