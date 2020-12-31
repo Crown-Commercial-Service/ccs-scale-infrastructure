@@ -85,8 +85,10 @@ data "aws_ssm_parameter" "hosted_zone_name_alb" {
 
 # CDN ACM SSL certificate
 data "aws_acm_certificate" "cdn" {
-  domain   = data.aws_ssm_parameter.hosted_zone_name_cdn.value
-  statuses = ["ISSUED"]
+  domain = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+
+  # Allow provisioning to proceed before cert is validated (issued) - useful for new environments
+  statuses = ["PENDING_VALIDATION", "ISSUED"]
   provider = aws.nvirginia
 }
 
