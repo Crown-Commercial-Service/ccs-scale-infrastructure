@@ -204,7 +204,7 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 80
   }
 
-  # Allow outbound internet traffic on port 587 (NAT -> SendGrid)
+  # Allow outbound SMTP (Sendgrid) traffic on port 587 (NAT -> SendGrid)
   egress {
     protocol   = "tcp"
     rule_no    = 100
@@ -212,6 +212,16 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = "0.0.0.0/0"
     from_port  = 587
     to_port    = 587
+  }
+
+  # Allow outbound UDP (Logit.io) traffic on port 21977
+  egress {
+    protocol   = "udp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21977
+    to_port    = 21977
   }
 
   tags = {
