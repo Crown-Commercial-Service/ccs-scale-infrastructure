@@ -133,7 +133,7 @@ resource "aws_network_acl" "scale_external" {
   }
 
   # Allow inbound traffic on ports 587 for sendgrid response
-  # (TODO: Why is this necessary / not on the ephemeral range?)
+  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
   ingress {
     protocol   = "tcp"
     rule_no    = 31
@@ -141,6 +141,39 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = "0.0.0.0/0"
     from_port  = 587
     to_port    = 587
+  }
+
+  # Allow inbound traffic on ports 21977 for Logit response
+  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  ingress {
+    protocol   = "udp"
+    rule_no    = 32
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 21977
+    to_port    = 21977
+  }
+
+  # Allow inbound traffic on ports 21975 for Logit response
+  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 33
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 21975
+    to_port    = 21975
+  }
+
+  # Allow inbound traffic on ports 21976 for Logit response
+  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 34
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 21976
+    to_port    = 21976
   }
 
   # Allow all inbound traffic on the SSH port (Bastion host)
@@ -204,7 +237,7 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 80
   }
 
-  # Allow outbound internet traffic on port 587 (NAT -> SendGrid)
+  # Allow outbound SMTP (Sendgrid) traffic on port 587 (NAT -> SendGrid)
   egress {
     protocol   = "tcp"
     rule_no    = 100
@@ -212,6 +245,36 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = "0.0.0.0/0"
     from_port  = 587
     to_port    = 587
+  }
+
+  # Allow outbound UDP (Logit.io) traffic on port 21977
+  egress {
+    protocol   = "udp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21977
+    to_port    = 21977
+  }
+
+  # Allow outbound TCP (Logit.io) traffic on port 21977
+  egress {
+    protocol   = "tcp"
+    rule_no    = 111
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21975
+    to_port    = 21975
+  }
+
+  # Allow outbound TCP (Logit.io) traffic on port 21977
+  egress {
+    protocol   = "tcp"
+    rule_no    = 112
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21976
+    to_port    = 21976
   }
 
   tags = {
@@ -326,6 +389,36 @@ resource "aws_network_acl" "scale_internal" {
     cidr_block = "0.0.0.0/0"
     from_port  = 587
     to_port    = 587
+  }
+
+  # Allow outbound UDP (Logit.io) traffic on port 21977 (Spre -> NAT)
+  egress {
+    protocol   = "udp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21977
+    to_port    = 21977
+  }
+
+  # Allow outbound TCP (Logit.io) traffic on port 21975 (Spre -> NAT)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 101
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21975
+    to_port    = 21975
+  }
+
+  # Allow outbound TCP (Logit.io) traffic on port 21976 (Spre -> NAT)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 102
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21976
+    to_port    = 21976
   }
 
   tags = {
