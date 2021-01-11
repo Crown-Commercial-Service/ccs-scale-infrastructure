@@ -3,7 +3,7 @@
 ## SCALE Shared Infrastructure Provisioning
 
 ### Overview
-This sub-project builds the next level on infrastructure on top of `ccs-scale-infra-network`. It is a separate set of Terraform scripts (a) to reduce the blast radius of anything going wrong as we need to protect the EIPs in the network layer, and (b) having explicit input variables, rather than references allows use of more advanced Terraform feature like loops which helps reduce duplication in this code leading to more maintainable, less error prone code.
+This sub-project builds the next level of infrastructure on top of `ccs-scale-infra-network`. It is a separate set of Terraform scripts (a) to reduce the blast radius of anything going wrong as we need to protect the EIPs in the network layer, and (b) having explicit input variables, rather than references allows use of more advanced Terraform feature like loops which helps reduce duplication in this code leading to more maintainable, less error prone code.
 
 This project will provision:
 
@@ -16,7 +16,7 @@ This project will provision:
 
 
 ### Bastion Host
-The Bastion Host EC2 instance provisioned in this project can be used tunnel SSH connections to access the Postgres Databases. 
+The Bastion Host EC2 instance provisioned in this project can be used tunnel SSH connections to access the Postgres Databases.
 
 1. You will need the pem file for the EC2 key pair - the key must match the name `{environment}-bastion-key`, e.g. `sbx1-bastion-key`.
 
