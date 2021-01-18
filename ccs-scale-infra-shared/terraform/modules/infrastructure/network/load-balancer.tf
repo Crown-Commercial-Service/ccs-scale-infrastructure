@@ -83,7 +83,7 @@ resource "aws_lb" "public_alb" {
 # Services must attach listener rules and certs as required
 ##############################################################
 resource "aws_lb_listener" "external_alb_port_443" {
-  load_balancer_arn = aws_lb.public_alb
+  load_balancer_arn = aws_lb.public_alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
