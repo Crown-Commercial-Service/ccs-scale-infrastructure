@@ -277,6 +277,16 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 21976
   }
 
+  # Allow outbound SSH to the VPC
+  egress {
+    protocol   = "tcp"
+    rule_no    = 113
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 22
+    to_port    = 22
+  }
+
   tags = {
     Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ACL-EXTERNAL"
     Project     = module.globals.project_name
@@ -359,6 +369,16 @@ resource "aws_network_acl" "scale_internal" {
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
     to_port    = 65535
+  }
+
+  # Allow inbound traffic on the SSH port from VPC
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 61
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 22
+    to_port    = 22
   }
 
   # Allow outbound VPC traffic on the ephemeral ports for responses to internal services
