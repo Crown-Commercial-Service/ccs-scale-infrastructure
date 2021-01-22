@@ -74,18 +74,9 @@ POLICY
   }
 }
 
-# CDN+ALB custom domain names
-data "aws_ssm_parameter" "hosted_zone_name_cdn" {
-  name = "${lower(var.environment)}-hosted-zone-name-cdn"
-}
-
-data "aws_ssm_parameter" "hosted_zone_name_alb" {
-  name = "${lower(var.environment)}-hosted-zone-name-alb"
-}
-
 # CDN ACM SSL certificate
 data "aws_acm_certificate" "cdn" {
-  domain   = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  domain   = var.hosted_zone_name_cdn
   statuses = ["ISSUED"]
   provider = aws.nvirginia
 }
@@ -103,8 +94,8 @@ module "functions" {
 ##############################################################
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
-    domain_name = data.aws_ssm_parameter.hosted_zone_name_alb.value
-    origin_id   = data.aws_ssm_parameter.hosted_zone_name_alb.value
+    domain_name = var.hosted_zone_name_alb
+    origin_id   = var.hosted_zone_name_alb
 
     custom_origin_config {
       http_port              = 80
@@ -134,7 +125,7 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = data.aws_ssm_parameter.hosted_zone_name_alb.value
+    target_origin_id = var.hosted_zone_name_alb
 
     forwarded_values {
       query_string = true
@@ -175,20 +166,20 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
     ssl_support_method             = "sni-only"
   }
 
-  aliases = [data.aws_ssm_parameter.hosted_zone_name_cdn.value]
+  aliases = [var.hosted_zone_name_cdn]
 }
 
 ##############################################################
 # Route53 CDN Alias ('A') record
 ##############################################################
 data "aws_route53_zone" "cdn" {
-  name         = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  name         = var.hosted_zone_name_cdn
   private_zone = false
 }
 
 resource "aws_route53_record" "cdn_alias" {
   zone_id = data.aws_route53_zone.cdn.zone_id
-  name    = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  name    = var.hosted_zone_name_cdn
   type    = "A"
 
   alias {
