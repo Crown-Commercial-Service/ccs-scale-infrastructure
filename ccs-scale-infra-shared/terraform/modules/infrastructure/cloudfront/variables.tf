@@ -21,3 +21,7 @@ variable "hosted_zone_name_alb" {
 variable "hosted_zone_name_cdn" {
   type = string
 }
+
+variable "resource_label" {
+  type = string
+}

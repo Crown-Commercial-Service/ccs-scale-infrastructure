@@ -42,7 +42,7 @@ resource "aws_lambda_function" "security_headers" {
 
   filename         = "${path.module}/.build/security-headers.zip"
   source_code_hash = data.archive_file.lambda_security_headers_zip.output_base64sha256
-  function_name    = "security-headers"
+  function_name    = "scale-${var.resource_label}-${lower(var.environment)}-security-headers"
   role             = aws_iam_role.lambda_edge_exec.arn
   description      = "Add HTTP security headers to responses"
   handler          = "index.handler"

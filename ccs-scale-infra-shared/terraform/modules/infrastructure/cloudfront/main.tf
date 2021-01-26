@@ -1,10 +1,14 @@
 #########################################################
 # CloudFront
 #
-# Distribution for FaT Buyer UI
+# Scale Distribution (FaT & BaT)
 #########################################################
 module "globals" {
   source = "../../globals"
+}
+
+locals {
+  bucket_name_logs = "scale-${var.resource_label}-${lower(var.environment)}-s3-cloudfront-logs"
 }
 
 # Aliased provider for us-east-1 region for use by specific resources (e.g. ACM certificates)
@@ -23,7 +27,7 @@ resource "random_password" "cloudfront_id" {
 }
 
 resource "aws_s3_bucket" "logs" {
-  bucket        = "scale-${lower(var.environment)}-s3-cloudfront-logs"
+  bucket        = local.bucket_name_logs
   acl           = "private"
   force_destroy = var.force_destroy_cloudfront_logs_bucket
 
@@ -35,7 +39,7 @@ resource "aws_s3_bucket" "logs" {
             "Effect": "Deny",
             "Principal": "*",
             "Action": "*",
-            "Resource": "arn:aws:s3:::scale-${lower(var.environment)}-s3-cloudfront-logs/*",
+            "Resource": "arn:aws:s3:::${local.bucket_name_logs}/*",
             "Condition": {
                 "Bool": {
                     "aws:SecureTransport": "false"
@@ -76,9 +80,10 @@ POLICY
 
 # CDN ACM SSL certificate
 data "aws_acm_certificate" "cdn" {
-  domain   = var.hosted_zone_name_cdn
-  statuses = ["ISSUED"]
-  provider = aws.nvirginia
+  domain      = var.hosted_zone_name_cdn
+  statuses    = ["ISSUED"]
+  provider    = aws.nvirginia
+  most_recent = true
 }
 
 ##############################################################
@@ -87,6 +92,8 @@ data "aws_acm_certificate" "cdn" {
 module "functions" {
   source         = "./functions"
   aws_account_id = var.aws_account_id
+  environment    = var.environment
+  resource_label = var.resource_label
 }
 
 ##############################################################
@@ -112,14 +119,14 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
 
   enabled         = true
   is_ipv6_enabled = true
-  comment         = "FaT Buyer UI"
+  comment         = replace(upper(var.resource_label), "-", " ")
 
   web_acl_id = aws_waf_web_acl.buyer_ui.id
 
   logging_config {
     include_cookies = false
     bucket          = aws_s3_bucket.logs.bucket_domain_name
-    prefix          = "fat-buyer-ui"
+    prefix          = var.resource_label
   }
 
   default_cache_behavior {

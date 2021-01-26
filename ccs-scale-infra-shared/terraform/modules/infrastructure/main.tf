@@ -62,6 +62,7 @@ module "cloudfront" {
   cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
   hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb.value
   hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  resource_label                      = "fat-buyer-ui"
 }
 
 # BaT Buyer UI
@@ -72,6 +73,7 @@ module "cloudfront_bat_client" {
   cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
   hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb_bat_client.value
   hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn_bat_client.value
+  resource_label                      = "bat-client"
 }
 
 # BaT Spree Backend
@@ -82,4 +84,5 @@ module "cloudfront_bat_backend" {
   cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
   hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb_bat_backend.value
   hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn_bat_backend.value
+  resource_label                      = "bat-backend"
 }
