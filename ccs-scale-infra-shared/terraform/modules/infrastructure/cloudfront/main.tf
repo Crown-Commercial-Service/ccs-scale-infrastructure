@@ -26,6 +26,13 @@ resource "random_password" "cloudfront_id" {
   # override_special = "_%@"
 }
 
+resource "aws_ssm_parameter" "cloudfront_id" {
+  name      = "${lower(var.environment)}-${var.resource_label}-cloudfront-id"
+  type      = "SecureString"
+  value     = random_password.cloudfront_id.result
+  overwrite = true
+}
+
 resource "aws_s3_bucket" "logs" {
   bucket        = local.bucket_name_logs
   acl           = "private"
