@@ -287,6 +287,17 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 22
   }
 
+  # Allow outbound TCP to ElasticSearch port for LogitIO
+  # Required to faciliate BaT client access
+  egress {
+    protocol   = "tcp"
+    rule_no    = 114
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 9200
+    to_port    = 9200
+  }
+
   tags = {
     Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ACL-EXTERNAL"
     Project     = module.globals.project_name
