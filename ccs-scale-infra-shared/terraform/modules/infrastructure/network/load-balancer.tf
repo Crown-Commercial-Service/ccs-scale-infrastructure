@@ -12,9 +12,26 @@
 #
 ##############################################################
 
-# Data sources for the ALB custom domain name and SSL certificate
-data "aws_ssm_parameter" "hosted_zone_name_alb" {
+# Data sources for the external ALB custom domain names and SSL certs
+
+# FaT
+data "aws_ssm_parameter" "hosted_zone_name_alb_fat" {
   name = "${lower(var.environment)}-hosted-zone-name-alb"
+}
+
+# BaT Client
+data "aws_ssm_parameter" "hosted_zone_name_alb_bat_client" {
+  name = "/bat/${lower(var.environment)}-hosted-zone-name-alb-bat-client"
+}
+
+# BaT Backend (Spree)
+data "aws_ssm_parameter" "hosted_zone_name_alb_bat_backend" {
+  name = "/bat/${lower(var.environment)}-hosted-zone-name-alb-bat-backend"
+}
+
+data "aws_acm_certificate" "alb_fat" {
+  domain   = data.aws_ssm_parameter.hosted_zone_name_alb_fat.value
+  statuses = ["ISSUED"]
 }
 
 resource "aws_lb" "private" {
@@ -62,16 +79,78 @@ resource "aws_lb" "public_alb" {
 }
 
 ##############################################################
-# Route53 CDN Alias ('A') record
+# Single external ALB listner on port 443
+# Services must attach listener rules and certs as required
 ##############################################################
-data "aws_route53_zone" "alb" {
-  name         = data.aws_ssm_parameter.hosted_zone_name_alb.value
+resource "aws_lb_listener" "external_alb_port_443" {
+  load_balancer_arn = aws_lb.public_alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = data.aws_acm_certificate.alb_fat.arn
+
+  default_action {
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/html"
+      message_body = "<html><body>Unauthorised</body></html>"
+      status_code  = "403"
+    }
+  }
+}
+
+resource "aws_ssm_parameter" "external_alb_port_443_listener_arn" {
+  name  = "${lower(var.environment)}-ext-alb-port-443-listener-arn"
+  type  = "String"
+  value = aws_lb_listener.external_alb_port_443.arn
+}
+
+##############################################################
+# Route53 CDN Alias ('A') records in external ALB
+##############################################################
+data "aws_route53_zone" "fat" {
+  name         = data.aws_ssm_parameter.hosted_zone_name_alb_fat.value
   private_zone = false
 }
 
-resource "aws_route53_record" "alb_alias" {
-  zone_id = data.aws_route53_zone.alb.zone_id
-  name    = data.aws_ssm_parameter.hosted_zone_name_alb.value
+data "aws_route53_zone" "bat_client" {
+  name         = data.aws_ssm_parameter.hosted_zone_name_alb_bat_client.value
+  private_zone = false
+}
+
+data "aws_route53_zone" "bat_backend" {
+  name         = data.aws_ssm_parameter.hosted_zone_name_alb_bat_backend.value
+  private_zone = false
+}
+
+resource "aws_route53_record" "alias_fat" {
+  zone_id = data.aws_route53_zone.fat.zone_id
+  name    = data.aws_ssm_parameter.hosted_zone_name_alb_fat.value
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.public_alb.dns_name
+    zone_id                = aws_lb.public_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "alias_bat_client" {
+  zone_id = data.aws_route53_zone.bat_client.zone_id
+  name    = data.aws_ssm_parameter.hosted_zone_name_alb_bat_client.value
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.public_alb.dns_name
+    zone_id                = aws_lb.public_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "alias_bat_backend" {
+  zone_id = data.aws_route53_zone.bat_backend.zone_id
+  name    = data.aws_ssm_parameter.hosted_zone_name_alb_bat_backend.value
   type    = "A"
 
   alias {
