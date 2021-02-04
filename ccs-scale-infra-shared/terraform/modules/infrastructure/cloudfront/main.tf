@@ -148,6 +148,7 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
 
     forwarded_values {
       query_string = true
+      headers      = ["Authorization"]
       cookies {
         forward = "all"
       }
