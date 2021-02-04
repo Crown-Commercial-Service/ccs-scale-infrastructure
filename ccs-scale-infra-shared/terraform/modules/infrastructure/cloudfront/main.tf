@@ -122,6 +122,11 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
       name  = "CloudFrontID"
       value = random_password.cloudfront_id.result
     }
+
+    custom_header {
+      name  = "X-Forwarded-Host"
+      value = var.hosted_zone_name_cdn
+    }
   }
 
   enabled         = true
