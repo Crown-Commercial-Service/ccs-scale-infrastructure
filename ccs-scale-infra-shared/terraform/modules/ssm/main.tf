@@ -45,10 +45,3 @@ resource "aws_ssm_parameter" "lb_private_db_dns" {
   value     = var.lb_private_db_dns
   overwrite = true
 }
-
-resource "aws_ssm_parameter" "cloudfront_id" {
-  name      = "${lower(var.environment)}-cloudfront-id"
-  type      = "SecureString"
-  value     = var.cloudfront_id
-  overwrite = true
-}

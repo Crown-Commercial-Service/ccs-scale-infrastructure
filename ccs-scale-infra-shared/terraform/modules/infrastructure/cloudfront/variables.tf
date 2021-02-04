@@ -6,10 +6,6 @@ variable "environment" {
   type = string
 }
 
-variable "lb_public_alb_dns" {
-  type = string
-}
-
 variable "force_destroy_cloudfront_logs_bucket" {
   type    = bool
   default = true
@@ -17,4 +13,15 @@ variable "force_destroy_cloudfront_logs_bucket" {
 
 variable "cloudfront_s3_log_retention_in_days" {
   type = number
+}
+variable "hosted_zone_name_alb" {
+  type = string
+}
+
+variable "hosted_zone_name_cdn" {
+  type = string
+}
+
+variable "resource_label" {
+  type = string
 }

@@ -15,6 +15,34 @@ data "aws_ssm_parameter" "public_nlb_eip_ids" {
   name = "${lower(var.environment)}-eip-ids-public-nlb"
 }
 
+# CDN+ALB custom domain names for CloudFront modules
+
+# FaT CDN
+data "aws_ssm_parameter" "hosted_zone_name_cdn" {
+  name = "${lower(var.environment)}-hosted-zone-name-cdn"
+}
+
+data "aws_ssm_parameter" "hosted_zone_name_cdn_bat_client" {
+  name = "/bat/${lower(var.environment)}-hosted-zone-name-cdn-bat-client"
+}
+
+data "aws_ssm_parameter" "hosted_zone_name_cdn_bat_backend" {
+  name = "/bat/${lower(var.environment)}-hosted-zone-name-cdn-bat-backend"
+}
+
+# FaT ALB
+data "aws_ssm_parameter" "hosted_zone_name_alb" {
+  name = "${lower(var.environment)}-hosted-zone-name-alb"
+}
+
+data "aws_ssm_parameter" "hosted_zone_name_alb_bat_client" {
+  name = "/bat/${lower(var.environment)}-hosted-zone-name-alb-bat-client"
+}
+
+data "aws_ssm_parameter" "hosted_zone_name_alb_bat_backend" {
+  name = "/bat/${lower(var.environment)}-hosted-zone-name-alb-bat-backend"
+}
+
 module "network" {
   source                 = "./network"
   environment            = var.environment
@@ -26,10 +54,35 @@ module "network" {
   public_nlb_eip_ids     = split(",", data.aws_ssm_parameter.public_nlb_eip_ids.value)
 }
 
+# FaT
 module "cloudfront" {
   source                              = "./cloudfront"
   aws_account_id                      = var.aws_account_id
   environment                         = var.environment
-  lb_public_alb_dns                   = module.network.lb_public_alb_dns
   cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
+  hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb.value
+  hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  resource_label                      = "fat-buyer-ui"
+}
+
+# BaT Buyer UI
+module "cloudfront_bat_client" {
+  source                              = "./cloudfront"
+  aws_account_id                      = var.aws_account_id
+  environment                         = var.environment
+  cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
+  hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb_bat_client.value
+  hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn_bat_client.value
+  resource_label                      = "bat-client"
+}
+
+# BaT Spree Backend
+module "cloudfront_bat_backend" {
+  source                              = "./cloudfront"
+  aws_account_id                      = var.aws_account_id
+  environment                         = var.environment
+  cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
+  hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb_bat_backend.value
+  hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn_bat_backend.value
+  resource_label                      = "bat-backend"
 }
