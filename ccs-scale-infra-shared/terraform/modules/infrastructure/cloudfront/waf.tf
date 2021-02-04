@@ -56,8 +56,8 @@ resource "aws_waf_rule" "xss" {
 }
 
 resource "aws_waf_web_acl" "buyer_ui" {
-  name        = "SCALE-EU2-${upper(var.environment)}-EXT-FatBuyerUI"
-  metric_name = "wafBuyerUi"
+  name        = "SCALE-EU2-${upper(var.environment)}-EXT-${upper(var.resource_label)}"
+  metric_name = "waf${replace(var.resource_label, "-", "")}"
 
   depends_on = [
     aws_waf_rate_based_rule.rate_limiting_rule,

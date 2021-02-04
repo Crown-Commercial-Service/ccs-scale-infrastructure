@@ -1,10 +1,14 @@
 #########################################################
 # CloudFront
 #
-# Distribution for FaT Buyer UI
+# Scale Distribution (FaT & BaT)
 #########################################################
 module "globals" {
   source = "../../globals"
+}
+
+locals {
+  bucket_name_logs = "scale-${var.resource_label}-${lower(var.environment)}-s3-cloudfront-logs"
 }
 
 # Aliased provider for us-east-1 region for use by specific resources (e.g. ACM certificates)
@@ -22,8 +26,15 @@ resource "random_password" "cloudfront_id" {
   # override_special = "_%@"
 }
 
+resource "aws_ssm_parameter" "cloudfront_id" {
+  name      = "${lower(var.environment)}-${var.resource_label}-cloudfront-id"
+  type      = "SecureString"
+  value     = random_password.cloudfront_id.result
+  overwrite = true
+}
+
 resource "aws_s3_bucket" "logs" {
-  bucket        = "scale-${lower(var.environment)}-s3-cloudfront-logs"
+  bucket        = local.bucket_name_logs
   acl           = "private"
   force_destroy = var.force_destroy_cloudfront_logs_bucket
 
@@ -35,7 +46,7 @@ resource "aws_s3_bucket" "logs" {
             "Effect": "Deny",
             "Principal": "*",
             "Action": "*",
-            "Resource": "arn:aws:s3:::scale-${lower(var.environment)}-s3-cloudfront-logs/*",
+            "Resource": "arn:aws:s3:::${local.bucket_name_logs}/*",
             "Condition": {
                 "Bool": {
                     "aws:SecureTransport": "false"
@@ -74,20 +85,12 @@ POLICY
   }
 }
 
-# CDN+ALB custom domain names
-data "aws_ssm_parameter" "hosted_zone_name_cdn" {
-  name = "${lower(var.environment)}-hosted-zone-name-cdn"
-}
-
-data "aws_ssm_parameter" "hosted_zone_name_alb" {
-  name = "${lower(var.environment)}-hosted-zone-name-alb"
-}
-
 # CDN ACM SSL certificate
 data "aws_acm_certificate" "cdn" {
-  domain   = data.aws_ssm_parameter.hosted_zone_name_cdn.value
-  statuses = ["ISSUED"]
-  provider = aws.nvirginia
+  domain      = var.hosted_zone_name_cdn
+  statuses    = ["ISSUED"]
+  provider    = aws.nvirginia
+  most_recent = true
 }
 
 ##############################################################
@@ -96,6 +99,8 @@ data "aws_acm_certificate" "cdn" {
 module "functions" {
   source         = "./functions"
   aws_account_id = var.aws_account_id
+  environment    = var.environment
+  resource_label = var.resource_label
 }
 
 ##############################################################
@@ -103,8 +108,8 @@ module "functions" {
 ##############################################################
 resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
   origin {
-    domain_name = data.aws_ssm_parameter.hosted_zone_name_alb.value
-    origin_id   = data.aws_ssm_parameter.hosted_zone_name_alb.value
+    domain_name = var.hosted_zone_name_alb
+    origin_id   = var.hosted_zone_name_alb
 
     custom_origin_config {
       http_port              = 80
@@ -117,24 +122,29 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
       name  = "CloudFrontID"
       value = random_password.cloudfront_id.result
     }
+
+    custom_header {
+      name  = "X-Forwarded-Host"
+      value = var.hosted_zone_name_cdn
+    }
   }
 
   enabled         = true
   is_ipv6_enabled = true
-  comment         = "FaT Buyer UI"
+  comment         = replace(upper(var.resource_label), "-", " ")
 
   web_acl_id = aws_waf_web_acl.buyer_ui.id
 
   logging_config {
     include_cookies = false
     bucket          = aws_s3_bucket.logs.bucket_domain_name
-    prefix          = "fat-buyer-ui"
+    prefix          = var.resource_label
   }
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = data.aws_ssm_parameter.hosted_zone_name_alb.value
+    target_origin_id = var.hosted_zone_name_alb
 
     forwarded_values {
       query_string = true
@@ -175,20 +185,20 @@ resource "aws_cloudfront_distribution" "fat_buyer_ui_distribution" {
     ssl_support_method             = "sni-only"
   }
 
-  aliases = [data.aws_ssm_parameter.hosted_zone_name_cdn.value]
+  aliases = [var.hosted_zone_name_cdn]
 }
 
 ##############################################################
 # Route53 CDN Alias ('A') record
 ##############################################################
 data "aws_route53_zone" "cdn" {
-  name         = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  name         = var.hosted_zone_name_cdn
   private_zone = false
 }
 
 resource "aws_route53_record" "cdn_alias" {
   zone_id = data.aws_route53_zone.cdn.zone_id
-  name    = data.aws_ssm_parameter.hosted_zone_name_cdn.value
+  name    = var.hosted_zone_name_cdn
   type    = "A"
 
   alias {
