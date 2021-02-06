@@ -63,6 +63,8 @@ module "cloudfront" {
   hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb.value
   hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn.value
   resource_label                      = "fat-buyer-ui"
+  cache_default_ttl                   = 3600
+  cache_max_ttl                       = 86400
 }
 
 # BaT Buyer UI
@@ -74,6 +76,8 @@ module "cloudfront_bat_client" {
   hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb_bat_client.value
   hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn_bat_client.value
   resource_label                      = "bat-client"
+  cache_default_ttl                   = 5
+  cache_max_ttl                       = 5
 }
 
 # BaT Spree Backend
@@ -85,4 +89,6 @@ module "cloudfront_bat_backend" {
   hosted_zone_name_alb                = data.aws_ssm_parameter.hosted_zone_name_alb_bat_backend.value
   hosted_zone_name_cdn                = data.aws_ssm_parameter.hosted_zone_name_cdn_bat_backend.value
   resource_label                      = "bat-backend"
+  cache_default_ttl                   = 5
+  cache_max_ttl                       = 5
 }
