@@ -25,3 +25,11 @@ variable "hosted_zone_name_cdn" {
 variable "resource_label" {
   type = string
 }
+
+variable "cache_default_ttl" {
+  type = number
+}
+
+variable "cache_max_ttl" {
+  type = number
+}
