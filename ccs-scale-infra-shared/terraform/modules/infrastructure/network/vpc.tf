@@ -132,8 +132,7 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 65535
   }
 
-  # Allow inbound traffic on ports 587 for sendgrid response
-  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  # Allow inbound traffic on ports 587 for sendgrid (from private subnets)
   ingress {
     protocol   = "tcp"
     rule_no    = 31
@@ -143,8 +142,7 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 587
   }
 
-  # Allow inbound traffic on ports 21977 for Logit response
-  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  # Allow inbound traffic on ports 21977 for Logit (from private subnets)
   ingress {
     protocol   = "udp"
     rule_no    = 32
@@ -154,8 +152,7 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 21977
   }
 
-  # Allow inbound traffic on ports 21975 for Logit response
-  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  # Allow inbound traffic on ports 21975 for Logit (from private subnets)
   ingress {
     protocol   = "tcp"
     rule_no    = 33
@@ -165,8 +162,7 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 21975
   }
 
-  # Allow inbound traffic on ports 21976 for Logit response
-  # (TODO: Move Spree + Sidekiq ECS services into public subnets to obviate need for this rule)
+  # Allow inbound traffic on ports 21976 for Logit (from private subnets)
   ingress {
     protocol   = "tcp"
     rule_no    = 34
@@ -174,6 +170,16 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = data.aws_vpc.scale.cidr_block
     from_port  = 21976
     to_port    = 21976
+  }
+
+  # Allow inbound traffic on environment specific port for Logit.io (from private subnets)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 35
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = var.logitio_port
+    to_port    = var.logitio_port
   }
 
   # Allow all inbound traffic on the SSH port (Bastion host)
@@ -275,6 +281,16 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = "0.0.0.0/0"
     from_port  = 21976
     to_port    = 21976
+  }
+
+  # Allow outbound TCP (Logit.io) traffic on environment specific Logit.io port
+  egress {
+    protocol   = "tcp"
+    rule_no    = 115
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = var.logitio_port
+    to_port    = var.logitio_port
   }
 
   # Allow outbound SSH to the VPC
@@ -402,7 +418,7 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 65535
   }
 
-  # Allow outbound internet traffic on port 443 (Buyer UI -> NAT / ECR)
+  # Allow outbound internet traffic on port 443 (Spree via NAT -> ECR)
   egress {
     protocol   = "tcp"
     rule_no    = 80
@@ -412,7 +428,7 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 443
   }
 
-  # Allow outbound internet traffic on port 587 (Spree -> NAT)
+  # Allow outbound TCP (Sendgrid) traffic on port 587 (Spree via NAT)
   egress {
     protocol   = "tcp"
     rule_no    = 90
@@ -422,7 +438,7 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 587
   }
 
-  # Allow outbound UDP (Logit.io) traffic on port 21977 (Spre -> NAT)
+  # Allow outbound UDP (Logit.io) traffic on port 21977 (Spree via NAT)
   egress {
     protocol   = "udp"
     rule_no    = 100
@@ -432,7 +448,7 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 21977
   }
 
-  # Allow outbound TCP (Logit.io) traffic on port 21975 (Spre -> NAT)
+  # Allow outbound TCP (Logit.io) traffic on port 21975 (Spree via NAT)
   egress {
     protocol   = "tcp"
     rule_no    = 101
@@ -442,7 +458,7 @@ resource "aws_network_acl" "scale_internal" {
     to_port    = 21975
   }
 
-  # Allow outbound TCP (Logit.io) traffic on port 21976 (Spre -> NAT)
+  # Allow outbound TCP (Logit.io) traffic on port 21976 (Spree via NAT)
   egress {
     protocol   = "tcp"
     rule_no    = 102
@@ -450,6 +466,16 @@ resource "aws_network_acl" "scale_internal" {
     cidr_block = "0.0.0.0/0"
     from_port  = 21976
     to_port    = 21976
+  }
+
+  # Allow outbound TCP (Logit.io) traffic on environment specific port (Spree via NAT)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 103
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = var.logitio_port
+    to_port    = var.logitio_port
   }
 
   tags = {

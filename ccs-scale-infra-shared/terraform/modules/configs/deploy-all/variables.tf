@@ -25,3 +25,10 @@ variable "cloudfront_s3_log_retention_in_days" {
   type    = number
   default = 7
 }
+
+variable "logitio_port" {
+  type = number
+
+  # Default logit.io TCP port (use as default for all envs unless overridden)
+  default = 21976
+}

@@ -33,3 +33,7 @@ variable "nat_eip_ids" {
 variable "public_nlb_eip_ids" {
   type = list
 }
+
+variable "logitio_port" {
+  type = number
+}

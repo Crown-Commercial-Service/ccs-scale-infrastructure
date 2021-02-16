@@ -30,4 +30,5 @@ module "deploy" {
   source         = "../../modules/configs/deploy-all"
   aws_account_id = data.aws_ssm_parameter.aws_account_id.value
   environment    = local.environment
+  logitio_port   = 10868
 }

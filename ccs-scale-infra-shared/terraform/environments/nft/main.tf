@@ -34,4 +34,5 @@ module "deploy" {
   cloudtrail_s3_log_retention_in_days = 2555 #7 years
   cloudwatch_s3_force_destroy         = false
   cloudfront_s3_log_retention_in_days = 2555 #7 years
+  logitio_port                        = 10841
 }

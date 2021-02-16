@@ -52,6 +52,7 @@ module "network" {
   private_db_subnet_ids  = var.private_db_subnet_ids
   nat_eip_ids            = split(",", data.aws_ssm_parameter.nat_eip_ids.value)
   public_nlb_eip_ids     = split(",", data.aws_ssm_parameter.public_nlb_eip_ids.value)
+  logitio_port           = var.logitio_port
 }
 
 # FaT

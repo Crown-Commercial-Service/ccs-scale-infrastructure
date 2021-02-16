@@ -30,3 +30,7 @@ variable "private_db_subnet_ids" {
 variable "cloudfront_s3_log_retention_in_days" {
   type = number
 }
+
+variable "logitio_port" {
+  type = number
+}
