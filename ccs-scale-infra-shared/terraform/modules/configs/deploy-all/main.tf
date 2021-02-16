@@ -77,6 +77,7 @@ module "infrastructure" {
   public_web_subnet_ids               = split(",", data.aws_ssm_parameter.public_web_subnet_ids.value)
   private_db_subnet_ids               = split(",", data.aws_ssm_parameter.private_db_subnet_ids.value)
   cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
+  logitio_port                        = var.logitio_port
 }
 
 module "ssm" {
