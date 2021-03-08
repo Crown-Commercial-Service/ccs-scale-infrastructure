@@ -97,10 +97,11 @@ data "aws_acm_certificate" "cdn" {
 # Lambda@Edge functions
 ##############################################################
 module "functions" {
-  source         = "./functions"
-  aws_account_id = var.aws_account_id
-  environment    = var.environment
-  resource_label = var.resource_label
+  source                  = "./functions"
+  aws_account_id          = var.aws_account_id
+  environment             = var.environment
+  resource_label          = var.resource_label
+  content_security_policy = var.content_security_policy
 }
 
 ##############################################################

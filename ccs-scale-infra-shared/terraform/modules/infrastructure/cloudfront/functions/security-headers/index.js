@@ -1,22 +1,50 @@
 "use strict";
-exports.handler = (event, context, callback) => {
+var AWS = require('aws-sdk');
+AWS.config.update({
+  region: 'eu-west-2'
+})
+var ssm = new AWS.SSM();
+
+exports.handler = async (event, context, callback) => {
   //Get contents of response
   const response = event.Records[0].cf.response;
   const headers = response.headers;
+
+  const functionName = context.functionName
+
+  console.log('Executing.... 1');
+
+  async function getP(){
+    var params = {
+      Name: '/bat/scale-bat-backend-sbx1-security-headers-csp',
+      WithDecryption: false,
+    };
+    var request = await ssm.getParameter(params).promise();
+    return request.Parameter.Value;          
+  }
+  
+  async function getParam(headers){
+    var resp = await getP();
+    console.log(resp);
+
+    headers["content-security-policy"] = [
+      {
+        key: "Content-Security-Policy",
+        value: resp,
+      },
+    ];
+  }
+
+  console.log('Executing.... 3');
+
+
+  await getParam(headers);
 
   //Set new headers
   headers["strict-transport-security"] = [
     {
       key: "Strict-Transport-Security",
       value: "max-age=63072000; includeSubdomains; preload",
-    },
-  ];
-  // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
-  headers["content-security-policy"] = [
-    {
-      key: "Content-Security-Policy",
-      value:
-        "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'",
     },
   ];
   headers["x-content-type-options"] = [
@@ -43,6 +71,9 @@ exports.handler = (event, context, callback) => {
       value: "same-origin",
     },
   ];
+
+  console.log('Exiting lambda >>');
+  console.log(headers);
 
   //Return modified response
   callback(null, response);
