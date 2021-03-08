@@ -72,7 +72,7 @@ resource "aws_lambda_function" "security_headers" {
   publish          = true
 }
 
-# BaT Spree Backend
+# Parameter that will be read by security_headers Lambda@edge function
 resource "aws_ssm_parameter" "csp" {
   name      = "/bat/${local.function_name}-csp"
   type      = "String"
