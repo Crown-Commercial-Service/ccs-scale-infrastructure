@@ -2,43 +2,43 @@
 var AWS = require('aws-sdk');
 AWS.config.update({
   region: 'eu-west-2'
-})
+});
 var ssm = new AWS.SSM();
+
+let contentSecurityPolicy;
 
 exports.handler = async (event, context, callback) => {
   //Get contents of response
   const response = event.Records[0].cf.response;
   const headers = response.headers;
 
-  const functionName = context.functionName
-
-  console.log('Executing.... 1');
-
-  async function getP(){
-    var params = {
-      Name: '/bat/scale-bat-backend-sbx1-security-headers-csp',
+  // functionName will be 'eu-east-1.scale-bat-backend-sbx1-security-headers'
+  const functionName = context.functionName.split('.').pop();
+  
+  async function getSSMParameter(paramName){
+    const params = {
+      Name: paramName,
       WithDecryption: false,
     };
-    var request = await ssm.getParameter(params).promise();
-    return request.Parameter.Value;          
+    const response = await ssm.getParameter(params).promise();
+    return response.Parameter.Value;          
   }
   
-  async function getParam(headers){
-    var resp = await getP();
-    console.log(resp);
+  async function setContentSecurityPolicy(headers){
+    if(contentSecurityPolicy == undefined){
+      const cspHeaderParamName = '/bat/' + functionName + '-csp';
+      contentSecurityPolicy = await getSSMParameter(cspHeaderParamName);
+    } 
 
     headers["content-security-policy"] = [
       {
         key: "Content-Security-Policy",
-        value: resp,
+        value: contentSecurityPolicy,
       },
     ];
   }
 
-  console.log('Executing.... 3');
-
-
-  await getParam(headers);
+  await setContentSecurityPolicy(headers);
 
   //Set new headers
   headers["strict-transport-security"] = [
