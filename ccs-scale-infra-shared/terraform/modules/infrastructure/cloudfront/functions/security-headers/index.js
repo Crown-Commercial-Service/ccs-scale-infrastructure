@@ -5,6 +5,7 @@ AWS.config.update({
 });
 var ssm = new AWS.SSM();
 
+//Local cache of CSP header
 let contentSecurityPolicy;
 
 exports.handler = async (event, context, callback) => {
@@ -12,7 +13,7 @@ exports.handler = async (event, context, callback) => {
   const response = event.Records[0].cf.response;
   const headers = response.headers;
 
-  // functionName will be 'eu-east-1.scale-bat-backend-sbx1-security-headers'
+  //Need to strip 'eu-east-1' prefix from function name
   const functionName = context.functionName.split('.').pop();
   
   async function getSSMParameter(paramName){
@@ -26,6 +27,7 @@ exports.handler = async (event, context, callback) => {
   
   async function setContentSecurityPolicy(headers){
     if(contentSecurityPolicy == undefined){
+      // Parameter name is based on function name and are auto created in Terraform, so should always align
       const cspHeaderParamName = '/bat/' + functionName + '-csp';
       contentSecurityPolicy = await getSSMParameter(cspHeaderParamName);
     } 
