@@ -95,7 +95,7 @@ module "cloudfront_bat_backend" {
   cache_default_ttl                   = 0
   cache_max_ttl                       = 0
   // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
-  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com data:; script-src 'self' 'unsafe-inline' js-agent.newrelic.com bam.eu01.nr-data.net; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'unsafe-inline'; connect-src bam.eu01.nr-data.net"
+  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com data:; script-src 'self' 'unsafe-inline' js-agent.newrelic.com bam.eu01.nr-data.net; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'unsafe-inline'; connect-src 'self' bam.eu01.nr-data.net"
 
 }
 
