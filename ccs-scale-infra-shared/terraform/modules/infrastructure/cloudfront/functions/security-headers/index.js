@@ -74,9 +74,6 @@ exports.handler = async (event, context, callback) => {
     },
   ];
 
-  console.log('Exiting lambda >>');
-  console.log(headers);
-
   //Return modified response
   callback(null, response);
 };
