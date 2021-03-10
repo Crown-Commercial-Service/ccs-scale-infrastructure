@@ -66,7 +66,8 @@ module "cloudfront" {
   resource_label                      = "fat-buyer-ui"
   cache_default_ttl                   = 3600
   cache_max_ttl                       = 86400
-}
+  content_security_policy             = "default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
+  }
 
 # BaT Buyer UI
 module "cloudfront_bat_client" {
@@ -79,9 +80,10 @@ module "cloudfront_bat_client" {
   resource_label                      = "bat-client"
   cache_default_ttl                   = 0
   cache_max_ttl                       = 0
+  // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
+  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
 }
 
-# BaT Spree Backend
 module "cloudfront_bat_backend" {
   source                              = "./cloudfront"
   aws_account_id                      = var.aws_account_id
@@ -92,4 +94,9 @@ module "cloudfront_bat_backend" {
   resource_label                      = "bat-backend"
   cache_default_ttl                   = 0
   cache_max_ttl                       = 0
+  // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
+  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com data:; script-src 'self' 'unsafe-inline' js-agent.newrelic.com bam.eu01.nr-data.net; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'unsafe-inline'; connect-src bam.eu01.nr-data.net"
+
 }
+
+

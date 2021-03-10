@@ -33,3 +33,7 @@ variable "cache_default_ttl" {
 variable "cache_max_ttl" {
   type = number
 }
+
+variable "content_security_policy" {
+  type = string
+}

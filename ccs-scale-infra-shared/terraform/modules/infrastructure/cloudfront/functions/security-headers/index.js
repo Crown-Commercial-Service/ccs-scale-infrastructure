@@ -1,22 +1,52 @@
 "use strict";
-exports.handler = (event, context, callback) => {
+var AWS = require('aws-sdk');
+AWS.config.update({
+  region: 'eu-west-2'
+});
+var ssm = new AWS.SSM();
+
+//Local cache of CSP header
+let contentSecurityPolicy;
+
+exports.handler = async (event, context, callback) => {
   //Get contents of response
   const response = event.Records[0].cf.response;
   const headers = response.headers;
+
+  //Need to strip 'eu-east-1' prefix from function name
+  const functionName = context.functionName.split('.').pop();
+  
+  async function getSSMParameter(paramName){
+    const params = {
+      Name: paramName,
+      WithDecryption: false,
+    };
+    const response = await ssm.getParameter(params).promise();
+    return response.Parameter.Value;          
+  }
+  
+  async function setContentSecurityPolicy(headers){
+    if(contentSecurityPolicy == undefined){
+      // Parameter name is based on function name and are auto created in Terraform, so should always align
+      const cspHeaderParamName = '/bat/' + functionName + '-csp';
+      contentSecurityPolicy = await getSSMParameter(cspHeaderParamName);
+    } 
+
+    headers["content-security-policy"] = [
+      {
+        key: "Content-Security-Policy",
+        value: contentSecurityPolicy,
+      },
+    ];
+  }
+
+  await setContentSecurityPolicy(headers);
 
   //Set new headers
   headers["strict-transport-security"] = [
     {
       key: "Strict-Transport-Security",
       value: "max-age=63072000; includeSubdomains; preload",
-    },
-  ];
-  // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
-  headers["content-security-policy"] = [
-    {
-      key: "Content-Security-Policy",
-      value:
-        "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'",
     },
   ];
   headers["x-content-type-options"] = [

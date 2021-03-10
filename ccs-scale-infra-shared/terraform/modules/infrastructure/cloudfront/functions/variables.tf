@@ -14,3 +14,7 @@ variable "environment" {
 variable "resource_label" {
   type = string
 }
+
+variable "content_security_policy" {
+  type = string
+}
