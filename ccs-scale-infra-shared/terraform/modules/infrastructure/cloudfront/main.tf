@@ -20,6 +20,10 @@ provider "aws" {
   }
 }
 
+data "aws_ssm_parameter" "kms_id_ssm" {
+  name = "${lower(var.environment)}-ssm-encryption-key"
+}
+
 resource "random_password" "cloudfront_id" {
   length  = 16
   special = false
@@ -31,6 +35,7 @@ resource "aws_ssm_parameter" "cloudfront_id" {
   type      = "SecureString"
   value     = random_password.cloudfront_id.result
   overwrite = true
+  key_id    = data.aws_ssm_parameter.kms_id_ssm.value
 }
 
 resource "aws_s3_bucket" "logs" {
