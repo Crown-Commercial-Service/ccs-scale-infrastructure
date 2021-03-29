@@ -314,6 +314,16 @@ resource "aws_network_acl" "scale_external" {
     to_port    = 9200
   }
 
+  # Allow outbound FTP (cnet) traffic on port 21
+  egress {
+    protocol   = "tcp"
+    rule_no    = 116
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21
+    to_port    = 21
+  }
+
   tags = {
     Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ACL-EXTERNAL"
     Project     = module.globals.project_name
