@@ -182,6 +182,17 @@ resource "aws_network_acl" "scale_external" {
     to_port    = var.logitio_port
   }
 
+
+  # Allow inbound traffic on ports 21 for CNET ftp (from private subnets)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 36
+    action     = "allow"
+    cidr_block = data.aws_vpc.scale.cidr_block
+    from_port  = 21
+    to_port    = 21
+  }
+
   # Allow all inbound traffic on the SSH port (Bastion host)
   ingress {
     protocol   = "tcp"
@@ -312,6 +323,16 @@ resource "aws_network_acl" "scale_external" {
     cidr_block = "0.0.0.0/0"
     from_port  = 9200
     to_port    = 9200
+  }
+
+  # Allow outbound FTP (cnet) traffic on port 21
+  egress {
+    protocol   = "tcp"
+    rule_no    = 116
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21
+    to_port    = 21
   }
 
   tags = {
@@ -476,6 +497,16 @@ resource "aws_network_acl" "scale_internal" {
     cidr_block = "0.0.0.0/0"
     from_port  = var.logitio_port
     to_port    = var.logitio_port
+  }
+
+  # Allow outbound TCP (CNET) traffic on port 21 (Spree via NAT)
+  egress {
+    protocol   = "tcp"
+    rule_no    = 104
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 21
+    to_port    = 21
   }
 
   tags = {
