@@ -37,3 +37,7 @@ variable "cache_max_ttl" {
 variable "content_security_policy" {
   type = string
 }
+
+variable "forwarded_headers" {
+  type = list(string)
+}
