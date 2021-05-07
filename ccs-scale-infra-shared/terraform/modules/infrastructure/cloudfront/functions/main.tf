@@ -30,6 +30,15 @@ resource "aws_iam_role" "lambda_edge_exec" {
 EOF
 }
 
+data "aws_iam_policy" "lambda_basic_exec" {
+  arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_exec_attach" {
+  role       = aws_iam_role.lambda_edge_exec.name
+  policy_arn = data.aws_iam_policy.lambda_basic_exec.arn
+}
+
 data "archive_file" "lambda_security_headers_zip" {
   type        = "zip"
   source_dir  = "${path.module}/security-headers"
