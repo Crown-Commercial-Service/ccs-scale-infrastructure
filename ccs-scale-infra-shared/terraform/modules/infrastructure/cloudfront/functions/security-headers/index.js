@@ -13,7 +13,6 @@ exports.handler = (event, context, callback) => {
   headers['content-security-policy'] = [{
     key: 'Content-Security-Policy',
     value: "default-src 'none'; img-src 'self' www.googletagmanager.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
-
   }];
   headers['x-content-type-options'] = [{
     key: 'X-Content-Type-Options',
