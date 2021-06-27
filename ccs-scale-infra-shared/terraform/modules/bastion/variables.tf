@@ -21,3 +21,11 @@ variable "bastion_kms_key_id" {
 variable "cidr_blocks_allowed_external" {
   type = list
 }
+
+variable "kali_instance" {
+  type = bool
+}
+
+variable "kali_instance_type" {
+  type = string
+}

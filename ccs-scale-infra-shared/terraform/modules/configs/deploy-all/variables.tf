@@ -32,3 +32,13 @@ variable "logitio_port" {
   # Default logit.io TCP port (use as default for all envs unless overridden)
   default = 21976
 }
+
+variable "kali_instance" {
+  type    = bool
+  default = false
+}
+
+variable "kali_instance_type" {
+  type    = string
+  default = "t2.micro"
+}
