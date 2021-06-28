@@ -35,4 +35,6 @@ module "deploy" {
   cloudwatch_s3_force_destroy         = false
   cloudfront_s3_log_retention_in_days = 2555 #7 years
   logitio_port                        = 10841
+  kali_instance                       = true
+  kali_instance_type                  = "t2.xlarge"
 }

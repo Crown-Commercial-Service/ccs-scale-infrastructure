@@ -68,7 +68,7 @@ module "cloudfront" {
   cache_max_ttl                       = 86400
   content_security_policy             = "default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
   forwarded_headers                   = ["Authorization", "Referer", "User-Agent"]
-  }
+}
 
 # BaT Buyer UI
 module "cloudfront_bat_client" {
@@ -82,8 +82,8 @@ module "cloudfront_bat_client" {
   cache_default_ttl                   = 0
   cache_max_ttl                       = 0
   // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
-  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
-  forwarded_headers                   = ["Authorization", "Referer", "User-Agent"]
+  content_security_policy = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
+  forwarded_headers       = ["Authorization", "Referer", "User-Agent"]
 }
 
 module "cloudfront_bat_backend" {
@@ -97,8 +97,8 @@ module "cloudfront_bat_backend" {
   cache_default_ttl                   = 0
   cache_max_ttl                       = 0
   // Image source requires CCS and S3 domains as BaT product images are loaded via a redirect to an S3 pre-signed URL
-  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com data:; script-src 'self' 'unsafe-inline' js-agent.newrelic.com bam.eu01.nr-data.net; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'unsafe-inline'; connect-src 'self' bam.eu01.nr-data.net"
-  forwarded_headers                   = ["Authorization", "Referer", "User-Agent", "Accept"]
+  content_security_policy = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com data:; script-src 'self' 'unsafe-inline' js-agent.newrelic.com bam.eu01.nr-data.net; font-src 'self' fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'unsafe-inline'; connect-src 'self' bam.eu01.nr-data.net"
+  forwarded_headers       = ["Authorization", "Referer", "User-Agent", "Accept"]
 
 }
 
