@@ -39,6 +39,7 @@ resource "aws_lb" "private" {
   internal           = true
   load_balancer_type = "network"
   subnets            = var.private_app_subnet_ids
+  enable_cross_zone_load_balancing = true
 
   tags = {
     Project     = module.globals.project_name
@@ -53,6 +54,7 @@ resource "aws_lb" "private_db" {
   internal           = true
   load_balancer_type = "network"
   subnets            = var.private_db_subnet_ids
+  enable_cross_zone_load_balancing = true
 
   tags = {
     Project     = module.globals.project_name
