@@ -99,8 +99,6 @@ module "bastion" {
   db_cidr_blocks               = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
   bastion_kms_key_id           = data.aws_ssm_parameter.bastion_kms_key_id.value
   cidr_blocks_allowed_external = concat(local.cidr_blocks_allowed_external_ccs, local.cidr_blocks_allowed_external_spark, local.cidr_blocks_allowed_external_cognizant)
-  kali_instance                = var.kali_instance
-  kali_instance_type           = var.kali_instance_type
 }
 
 # CloudTrail is not really required in lower enviromnments.
