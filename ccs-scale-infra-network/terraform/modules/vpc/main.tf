@@ -60,6 +60,7 @@ resource "aws_subnet" "SCALE-AZ-WEB-Public" {
   vpc_id                  = aws_vpc.SCALE-Services.id
   cidr_block              = each.value["cidr_block"]
   availability_zone       = each.key
+  #map_public_ip_on_launch = false
   map_public_ip_on_launch = true
 
   tags = {
