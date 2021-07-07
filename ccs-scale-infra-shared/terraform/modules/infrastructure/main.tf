@@ -66,7 +66,7 @@ module "cloudfront" {
   resource_label                      = "fat-buyer-ui"
   cache_default_ttl                   = 3600
   cache_max_ttl                       = 86400
-  content_security_policy             = "default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline'; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; object-src 'none'"
+  content_security_policy             = "default-src 'none'; img-src 'self' *.crowncommercial.gov.uk *.s3.eu-west-2.amazonaws.com www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com; connect-src https://www.google-analytics.com; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com https://tagmanager.google.com; object-src 'none'"
   forwarded_headers                   = ["Authorization", "Referer", "User-Agent"]
 }
 
