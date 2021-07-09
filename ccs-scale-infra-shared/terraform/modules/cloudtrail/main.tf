@@ -171,7 +171,8 @@ resource "aws_cloudtrail" "scale" {
 # SNS Topic: CloudTrail Alarms
 ##############################
 resource "aws_sns_topic" "cloudtrail_alarms" {
-  name = "CCS-EU2-${upper(var.environment)}-CLOUDTRAIL-ALARMS"
+  name              = "CCS-EU2-${upper(var.environment)}-CLOUDTRAIL-ALARMS"
+  kms_master_key_id = "alias/aws/sns"
 }
 
 ###########################
