@@ -9,7 +9,7 @@ on:
   push:
     branches: [ develop, bat/develop, master ]
   pull_request:
-    branches: [ develop ]  
+    branches: [ develop, bat/develop ]  
   schedule:
     - cron: '43 3 * * 5'
 
