@@ -21,3 +21,7 @@ variable "cloudwatch_s3_force_destroy" {
 variable "cloudtrail_kms_key_arn" {
   type = string
 }
+
+variable "cloudwatch_kms_key_arn" {
+  type = string
+}

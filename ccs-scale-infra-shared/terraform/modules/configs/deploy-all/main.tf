@@ -122,4 +122,5 @@ module "cloudtrail" {
   cloudtrail_s3_log_retention_in_days = var.cloudtrail_s3_log_retention_in_days
   cloudwatch_s3_force_destroy         = var.cloudwatch_s3_force_destroy
   cloudtrail_kms_key_arn              = module.kms.cloudtrail_kms_key_arn
+  cloudwatch_kms_key_arn              = module.kms.cloudwatch_kms_key_arn
 }

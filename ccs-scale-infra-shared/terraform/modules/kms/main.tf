@@ -44,26 +44,6 @@ resource "aws_kms_key" "cloudtrail" {
           ]
         }
       }
-    },
-    {
-      "Sid": "Allow CloudWatch permission to use key",
-      "Effect": "Allow",
-      "Principal": {
-          "Service": "logs.eu-west-2.amazonaws.com"
-      },
-      "Action": [
-          "kms:Encrypt*",
-          "kms:Decrypt*",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "kms:Describe*"
-      ],
-      "Resource": "*",
-      "Condition": {
-          "ArnEquals": {
-              "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:*:${var.aws_account_id}:*"
-          }
-      }
     }
   ]
 }
@@ -81,7 +61,6 @@ resource "aws_kms_alias" "cloudtrail" {
   name          = "alias/cloudtrail"
   target_key_id = aws_kms_key.cloudtrail.key_id
 }
-
 
 ##########################
 # CloudWatch KMS Key
