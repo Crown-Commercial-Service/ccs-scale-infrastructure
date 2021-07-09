@@ -85,6 +85,9 @@ resource "aws_kms_alias" "cloudtrail" {
 
 ##########################
 # CloudWatch KMS Key
+# 
+# Can be used for CW logs
+# across other repos
 ##########################
 resource "aws_kms_key" "cloudwatch" {
   description         = "CloudWatch Logs Key"
