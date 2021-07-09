@@ -95,6 +95,7 @@ POLICY
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "/cloudtrail/${lower(var.environment)}"
   retention_in_days = var.cloudtrail_cw_log_retention_in_days
+  kms_key_id        = var.cloudwatch_kms_key_arn
 
   tags = {
     Project     = module.globals.project_name
@@ -165,6 +166,8 @@ resource "aws_cloudtrail" "scale" {
   enable_log_file_validation    = true
   cloud_watch_logs_group_arn    = aws_cloudwatch_log_group.cloudtrail.arn
   cloud_watch_logs_role_arn     = aws_iam_role.cloudtrail.arn
+  kms_key_id                    = var.cloudtrail_kms_key_arn
+  is_multi_region_trail         = true
 }
 
 ##############################

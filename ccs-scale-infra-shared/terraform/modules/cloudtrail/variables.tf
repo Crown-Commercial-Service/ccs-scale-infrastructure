@@ -17,3 +17,11 @@ variable "cloudtrail_s3_log_retention_in_days" {
 variable "cloudwatch_s3_force_destroy" {
   type = bool
 }
+
+variable "cloudtrail_kms_key_arn" {
+  type = string
+}
+
+variable "cloudwatch_kms_key_arn" {
+  type = string
+}

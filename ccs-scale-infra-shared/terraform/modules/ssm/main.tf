@@ -45,3 +45,10 @@ resource "aws_ssm_parameter" "lb_private_db_dns" {
   value     = var.lb_private_db_dns
   overwrite = true
 }
+
+resource "aws_ssm_parameter" "cloudwatch_kms_key_arn" {
+  name      = "${lower(var.environment)}-cloudwatch-kms-key-arn"
+  type      = "String"
+  value     = var.cloudwatch_kms_key_arn
+  overwrite = true
+}

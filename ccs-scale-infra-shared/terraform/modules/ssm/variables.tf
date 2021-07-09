@@ -25,3 +25,7 @@ variable "lb_private_dns" {
 variable "lb_private_db_dns" {
   type = string
 }
+
+variable "cloudwatch_kms_key_arn" {
+  type = string
+}
