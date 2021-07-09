@@ -70,6 +70,8 @@ locals {
 
 module "kms" {
   source = "../../kms"
+  aws_account_id                      = var.aws_account_id
+  environment                         = var.environment
 }
 
 module "infrastructure" {

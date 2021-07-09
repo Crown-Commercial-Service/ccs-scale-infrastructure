@@ -1,3 +1,14 @@
+
+#########################################################
+# KMS
+#
+# Customer Manager KMS Keys
+#########################################################
+
+module "globals" {
+  source = "../globals"
+}
+
 ##########################
 # CloudTrail KMS Key
 ##########################
@@ -13,7 +24,7 @@ resource "aws_kms_key" "cloudtrail" {
       "Sid": "Enable IAM User Permissions",
       "Effect": "Allow",
       "Principal": {
-          "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+          "AWS": "arn:aws:iam::${var.aws_account_id}:root"
       },
       "Action": "kms:*",
       "Resource": "*"
@@ -29,9 +40,29 @@ resource "aws_kms_key" "cloudtrail" {
       "Condition": {
         "StringLike": {
           "kms:EncryptionContext:aws:cloudtrail:arn": [
-            "arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"
+            "arn:aws:cloudtrail:*:${var.aws_account_id}:trail/*"
           ]
         }
+      }
+    },
+    {
+      "Sid": "Allow CloudWatch permission to use key",
+      "Effect": "Allow",
+      "Principal": {
+          "Service": "logs.eu-west-2.amazonaws.com"
+      },
+      "Action": [
+          "kms:Encrypt*",
+          "kms:Decrypt*",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:Describe*"
+      ],
+      "Resource": "*",
+      "Condition": {
+          "ArnEquals": {
+              "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:*:${var.aws_account_id}:*"
+          }
       }
     }
   ]
@@ -67,7 +98,7 @@ resource "aws_kms_key" "cloudwatch" {
       "Sid": "Enable IAM User Permissions",
       "Effect": "Allow",
       "Principal": {
-          "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+          "AWS": "arn:aws:iam::${var.aws_account_id}:root"
       },
       "Action": "kms:*",
       "Resource": "*"
@@ -88,7 +119,7 @@ resource "aws_kms_key" "cloudwatch" {
       "Resource": "*",
       "Condition": {
           "ArnEquals": {
-              "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:*"
+              "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:*:${var.aws_account_id}:*"
           }
       }
     }  

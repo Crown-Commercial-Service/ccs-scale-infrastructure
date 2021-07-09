@@ -12,10 +12,6 @@ module "globals" {
   source = "../globals"
 }
 
-data "aws_caller_identity" "current" {}
-
-
-
 ##########################
 # CloudTrail log bucket
 ##########################
@@ -99,7 +95,7 @@ POLICY
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   name              = "/cloudtrail/${lower(var.environment)}"
   retention_in_days = var.cloudtrail_cw_log_retention_in_days
-  kms_key_id        = aws_kms_key.cloudtrail.arn
+  kms_key_id        = var.cloudtrail_kms_key_arn
 
   tags = {
     Project     = module.globals.project_name
