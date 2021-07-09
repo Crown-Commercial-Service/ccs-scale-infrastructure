@@ -68,6 +68,10 @@ locals {
   cidr_blocks_allowed_external_cognizant = data.aws_ssm_parameter.cidr_blocks_allowed_external_cognizant.value != "-" ? split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_cognizant.value) : []
 }
 
+module "kms" {
+  source = "../../kms"
+}
+
 module "infrastructure" {
   source                              = "../../infrastructure"
   aws_account_id                      = var.aws_account_id
@@ -81,14 +85,15 @@ module "infrastructure" {
 }
 
 module "ssm" {
-  source            = "../../ssm"
-  environment       = var.environment
-  lb_private_arn    = module.infrastructure.lb_private_arn
-  lb_private_db_arn = module.infrastructure.lb_private_db_arn
-  lb_public_alb_arn = module.infrastructure.lb_public_alb_arn
-  vpc_link_id       = module.infrastructure.vpc_link_id
-  lb_private_dns    = module.infrastructure.lb_private_dns
-  lb_private_db_dns = module.infrastructure.lb_private_db_dns
+  source                 = "../../ssm"
+  environment            = var.environment
+  lb_private_arn         = module.infrastructure.lb_private_arn
+  lb_private_db_arn      = module.infrastructure.lb_private_db_arn
+  lb_public_alb_arn      = module.infrastructure.lb_public_alb_arn
+  vpc_link_id            = module.infrastructure.vpc_link_id
+  lb_private_dns         = module.infrastructure.lb_private_dns
+  lb_private_db_dns      = module.infrastructure.lb_private_db_dns
+  cloudwatch_kms_key_arn = module.kms.cloudwatch_kms_key_arn
 }
 
 module "bastion" {
@@ -114,4 +119,5 @@ module "cloudtrail" {
   cloudtrail_cw_log_retention_in_days = var.cloudtrail_cw_log_retention_in_days
   cloudtrail_s3_log_retention_in_days = var.cloudtrail_s3_log_retention_in_days
   cloudwatch_s3_force_destroy         = var.cloudwatch_s3_force_destroy
+  cloudtrail_kms_key_arn              = module.kms.cloudtrail_kms_key_arn
 }

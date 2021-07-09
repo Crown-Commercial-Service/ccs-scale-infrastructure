@@ -14,77 +14,7 @@ module "globals" {
 
 data "aws_caller_identity" "current" {}
 
-##########################
-# KMS Key
-##########################
-resource "aws_kms_key" "cloudtrail" {
-  description         = "CloudTrail Logs Key"
-  enable_key_rotation = true
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "Enable IAM User Permissions",
-      "Effect": "Allow",
-      "Principal": {
-          "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-      },
-      "Action": "kms:*",
-      "Resource": "*"
-    },
-    {
-      "Sid": "Allow CloudTrail to encrypt logs",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "cloudtrail.amazonaws.com"
-      },
-      "Action": "kms:GenerateDataKey*",
-      "Resource": "*",
-      "Condition": {
-        "StringLike": {
-          "kms:EncryptionContext:aws:cloudtrail:arn": [
-            "arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"
-          ]
-        }
-      }
-    },
-    {
-      "Effect": "Allow",
-      "Principal": {
-          "Service": "logs.eu-west-2.amazonaws.com"
-      },
-      "Action": [
-          "kms:Encrypt*",
-          "kms:Decrypt*",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "kms:Describe*"
-      ],
-      "Resource": "*",
-      "Condition": {
-          "ArnEquals": {
-              "kms:EncryptionContext:aws:logs:arn": "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:*"
-          }
-      }
-    }  
-  ]
-}
-EOF
-
-  tags = {
-    Project     = module.globals.project_name
-    Environment = upper(var.environment)
-    Cost_Code   = module.globals.project_cost_code
-    AppType     = "CLOUDTRAIL"
-  }
-}
-
-resource "aws_kms_alias" "cloudtrail" {
-  name          = "alias/cloudtrail"
-  target_key_id = aws_kms_key.cloudtrail.key_id
-}
 
 ##########################
 # CloudTrail log bucket
@@ -240,7 +170,7 @@ resource "aws_cloudtrail" "scale" {
   enable_log_file_validation    = true
   cloud_watch_logs_group_arn    = aws_cloudwatch_log_group.cloudtrail.arn
   cloud_watch_logs_role_arn     = aws_iam_role.cloudtrail.arn
-  kms_key_id                    = aws_kms_key.cloudtrail.arn
+  kms_key_id                    = var.cloudtrail_kms_key_arn
   is_multi_region_trail         = true
 }
 
