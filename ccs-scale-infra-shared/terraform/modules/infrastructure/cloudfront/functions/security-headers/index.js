@@ -12,7 +12,7 @@ exports.handler = (event, context, callback) => {
   }];
   headers['content-security-policy'] = [{
     key: 'Content-Security-Policy',
-    value: "default-src 'none'; img-src 'self' www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com cdn.gbqofs.com report.*.gbqofs.io; connect-src https://www.google-analytics.com cdn.gbqofs.com report.*.gbqofs.io; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com https://tagmanager.google.com; object-src 'none'"
+    value: "default-src 'none'; img-src 'self' www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com cdn2.gbqofs.com report.*.gbqofs.io; connect-src https://www.google-analytics.com cdn2.gbqofs.com report.*.gbqofs.io; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com https://tagmanager.google.com; object-src 'none'"
   }];
   headers['x-content-type-options'] = [{
     key: 'X-Content-Type-Options',
