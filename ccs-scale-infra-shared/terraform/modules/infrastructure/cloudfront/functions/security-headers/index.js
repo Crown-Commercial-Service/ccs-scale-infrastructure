@@ -12,7 +12,7 @@ exports.handler = (event, context, callback) => {
   }];
   headers['content-security-policy'] = [{
     key: 'Content-Security-Policy',
-    value: "default-src 'none'; img-src 'self' www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://ssl.google-analytics.com cdn2.gbqofs.com report.crown-comm.gbqofs.io; connect-src https://www.google-analytics.com cdn2.gbqofs.com report.crown-comm.gbqofs.io; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com https://tagmanager.google.com; object-src 'none'"
+    value: "default-src blob:; img-src 'self' www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' blob: https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://region1.analytics.google.com https://region2.analytics.google.com https://ssl.google-analytics.com cdn2.gbqofs.com report.crown-comm.gbqofs.io; connect-src https://www.google-analytics.com https://www.google.co.uk https://region1.analytics.google.com https://region2.analytics.google.com cdn2.gbqofs.com report.crown-comm.gbqofs.io; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com https://tagmanager.google.com; object-src 'none'"
   }];
   headers['x-content-type-options'] = [{
     key: 'X-Content-Type-Options',
