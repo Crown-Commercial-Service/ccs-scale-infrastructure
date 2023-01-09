@@ -12,7 +12,7 @@ exports.handler = (event, context, callback) => {
   }];
   headers['content-security-policy'] = [{
     key: 'Content-Security-Policy',
-    value: "default-src blob:; img-src 'self' www.googletagmanager.com https://www.google-analytics.com; script-src 'self' 'unsafe-inline' blob: https://www.googletagmanager.com https://tagmanager.google.com https://www.google-analytics.com https://region1.analytics.google.com https://region2.analytics.google.com https://ssl.google-analytics.com cdn2.gbqofs.com report.crown-comm.gbqofs.io; connect-src https://www.google-analytics.com https://www.google.co.uk https://region1.analytics.google.com https://region2.analytics.google.com cdn2.gbqofs.com report.crown-comm.gbqofs.io; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com https://tagmanager.google.com; object-src 'none'"
+    value: "default-src blob:; img-src 'self' www.googletagmanager.com www.google-analytics.com www.google.co.uk www.google.com px.ads.linkedin.com; script-src 'self' 'unsafe-inline' blob: www.googletagmanager.com tagmanager.google.com www.google-analytics.com region1.analytics.google.com region2.analytics.google.com googleads.g.doubleclick.net snap.licdn.com www.google.co.uk ssl.google-analytics.com stats.g.doubleclick.net cdn.linkedin cdn2.gbqofs.com report.crown-comm.gbqofs.io; connect-src www.google-analytics.com www.google.co.uk region1.analytics.google.com region2.analytics.google.com cdn.linkedin stats.g.doubleclick.net cdn2.gbqofs.com report.crown-comm.gbqofs.io; font-src fonts.gstatic.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com tagmanager.google.com; object-src 'none'"
   }];
   headers['x-content-type-options'] = [{
     key: 'X-Content-Type-Options',
