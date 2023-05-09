@@ -2,6 +2,8 @@ variable "aws_account_id" {
   type = string
 }
 
+variable "cidr_blocks_allowed_external" {}
+
 variable "ec2_key_pair" {
   type    = string
   default = "ccs-spree-key"
