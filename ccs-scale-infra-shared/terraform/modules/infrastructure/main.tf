@@ -16,14 +16,15 @@ data "aws_ssm_parameter" "public_nlb_eip_ids" {
 }
 
 module "network" {
-  source                 = "./network"
-  environment            = var.environment
-  vpc_id                 = var.vpc_id
-  private_app_subnet_ids = var.private_app_subnet_ids
-  public_web_subnet_ids  = var.public_web_subnet_ids
-  private_db_subnet_ids  = var.private_db_subnet_ids
-  nat_eip_ids            = split(",", data.aws_ssm_parameter.nat_eip_ids.value)
-  public_nlb_eip_ids     = split(",", data.aws_ssm_parameter.public_nlb_eip_ids.value)
+  source                        = "./network"
+  environment                   = var.environment
+  vpc_id                        = var.vpc_id
+  private_app_subnet_ids        = var.private_app_subnet_ids
+  public_web_subnet_ids         = var.public_web_subnet_ids
+  private_db_subnet_ids         = var.private_db_subnet_ids
+  nat_eip_ids                   = split(",", data.aws_ssm_parameter.nat_eip_ids.value)
+  public_nlb_eip_ids            = split(",", data.aws_ssm_parameter.public_nlb_eip_ids.value)
+  cidr_blocks_allowed_external  = var.cidr_blocks_allowed_external
 }
 
 module "cloudfront" {
