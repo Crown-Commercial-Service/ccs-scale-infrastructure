@@ -1,3 +1,7 @@
+variable "cidr_blocks_allowed_external" {
+  type = list(string)
+}
+
 variable "environment" {
   type = string
 }

@@ -102,46 +102,6 @@ resource "aws_network_acl" "scale_external" {
   vpc_id     = var.vpc_id
   subnet_ids = var.public_web_subnet_ids
 
-  # Allow all inbound traffic on the external load balancer listener port
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 10
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = var.https_port
-    to_port    = var.https_port
-  }
-
-  # Allow inbound traffic to NAT from instances within the VPC
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 20
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = var.https_port
-    to_port    = var.https_port
-  }
-
-  # Allow all inbound traffic on the NAT G/W ephemeral ports
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 30
-    action     = "allow"
-    cidr_block = "0.0.0.0/0" # CCS range?
-    from_port  = 1024
-    to_port    = 65535
-  }
-
-  # Allow all inbound traffic on the SSH port (Bastion host)
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 40
-    action     = "allow"
-    cidr_block = "0.0.0.0/0" # CCS range?
-    from_port  = 22
-    to_port    = 22
-  }
-
   # Allow outbound traffic to the VPC on port 443
   egress {
     protocol   = "tcp"
@@ -200,6 +160,51 @@ resource "aws_network_acl" "scale_external" {
     Cost_Code   = module.globals.project_cost_code
     AppType     = "NETWORK"
   }
+}
+
+resource "aws_network_acl_rule" "scale_external_external_load_balancer_listener" {
+  network_acl_id  = aws_network_acl.scale_external.id
+  rule_number     = 10
+  egress          = false
+  protocol        = "tcp"
+  rule_action     = "allow"
+  cidr_block      = "0.0.0.0/0"
+  from_port       = var.https_port
+  to_port         = var.https_port
+}
+
+resource "aws_network_acl_rule" "scale_external_to_nat_from_instances" {
+  network_acl_id  = aws_network_acl.scale_external.id
+  rule_number     = 20
+  egress          = false
+  protocol        = "tcp"
+  rule_action     = "allow"
+  cidr_block      = data.aws_vpc.scale.cidr_block
+  from_port       = var.https_port
+  to_port         = var.https_port
+}
+
+resource "aws_network_acl_rule" "scale_external_nat_gw_ephemeral_ports" {
+  network_acl_id  = aws_network_acl.scale_external.id
+  rule_number     = 30
+  egress          = false
+  protocol        = "tcp"
+  rule_action     = "allow"
+  cidr_block      = "0.0.0.0/0"
+  from_port       = 1024
+  to_port         = 65535
+}
+
+resource "aws_network_acl_rule" "scale_external_ssh_rules" {
+  count           = length(var.cidr_blocks_allowed_external)
+  network_acl_id  = aws_network_acl.scale_external.id
+  rule_number     = "4${count.index}"
+  egress          = false
+  protocol        = "tcp"
+  rule_action     = "allow"
+  cidr_block      = var.cidr_blocks_allowed_external[count.index]
+  from_port       = 22
+  to_port         = 22
 }
 
 resource "aws_network_acl" "scale_internal" {
