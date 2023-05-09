@@ -24,3 +24,9 @@
 
 # OSX
 .DS_Store
+
+# IntelliJ
+*.xml
+*.iml
+*.hcl
+*.idea
