@@ -31,9 +31,18 @@ variable "private_db_subnet_ids" {
 }
 
 variable "nat_eip_ids" {
-  type = list
+  type = list(any)
 }
 
 variable "public_nlb_eip_ids" {
-  type = list
+  type = list(any)
+}
+
+variable "transit_gateway_routes" {
+  description = "Transit gateway routes"
+  type = map(object({
+    destination_cidr_block = string
+    transit_gateway_id     = string
+  }))
+  default = {}
 }

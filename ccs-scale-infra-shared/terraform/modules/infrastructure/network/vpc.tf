@@ -163,48 +163,48 @@ resource "aws_network_acl" "scale_external" {
 }
 
 resource "aws_network_acl_rule" "scale_external_external_load_balancer_listener" {
-  network_acl_id  = aws_network_acl.scale_external.id
-  rule_number     = 10
-  egress          = false
-  protocol        = "tcp"
-  rule_action     = "allow"
-  cidr_block      = "0.0.0.0/0"
-  from_port       = var.https_port
-  to_port         = var.https_port
+  network_acl_id = aws_network_acl.scale_external.id
+  rule_number    = 10
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = var.https_port
+  to_port        = var.https_port
 }
 
 resource "aws_network_acl_rule" "scale_external_to_nat_from_instances" {
-  network_acl_id  = aws_network_acl.scale_external.id
-  rule_number     = 20
-  egress          = false
-  protocol        = "tcp"
-  rule_action     = "allow"
-  cidr_block      = data.aws_vpc.scale.cidr_block
-  from_port       = var.https_port
-  to_port         = var.https_port
+  network_acl_id = aws_network_acl.scale_external.id
+  rule_number    = 20
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = data.aws_vpc.scale.cidr_block
+  from_port      = var.https_port
+  to_port        = var.https_port
 }
 
 resource "aws_network_acl_rule" "scale_external_nat_gw_ephemeral_ports" {
-  network_acl_id  = aws_network_acl.scale_external.id
-  rule_number     = 30
-  egress          = false
-  protocol        = "tcp"
-  rule_action     = "allow"
-  cidr_block      = "0.0.0.0/0"
-  from_port       = 1024
-  to_port         = 65535
+  network_acl_id = aws_network_acl.scale_external.id
+  rule_number    = 30
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 1024
+  to_port        = 65535
 }
 
 resource "aws_network_acl_rule" "scale_external_ssh_rules" {
-  count           = length(var.cidr_blocks_allowed_external)
-  network_acl_id  = aws_network_acl.scale_external.id
-  rule_number     = "4${count.index}"
-  egress          = false
-  protocol        = "tcp"
-  rule_action     = "allow"
-  cidr_block      = var.cidr_blocks_allowed_external[count.index]
-  from_port       = 22
-  to_port         = 22
+  count          = length(var.cidr_blocks_allowed_external)
+  network_acl_id = aws_network_acl.scale_external.id
+  rule_number    = "4${count.index}"
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = var.cidr_blocks_allowed_external[count.index]
+  from_port      = 22
+  to_port        = 22
 }
 
 resource "aws_network_acl" "scale_internal" {
@@ -525,6 +525,16 @@ resource "aws_route_table_association" "scale_nat" {
 
   route_table_id = aws_route_table.scale_nat[count.index].id
   subnet_id      = var.private_app_subnet_ids[count.index]
+}
+
+##############################################################
+# Routes - vpc access via Transit Gateway
+##############################################################
+resource "aws_route" "transit_gateway_route_main" {
+  for_each               = var.transit_gateway_routes
+  route_table_id         = aws_route_table.scale_main.id
+  destination_cidr_block = each.value.destination_cidr_block
+  transit_gateway_id     = each.value.transit_gateway_id
 }
 
 ##############################################################

@@ -78,6 +78,7 @@ module "infrastructure" {
   private_db_subnet_ids               = split(",", data.aws_ssm_parameter.private_db_subnet_ids.value)
   cloudfront_s3_log_retention_in_days = var.cloudfront_s3_log_retention_in_days
   cidr_blocks_allowed_external        = concat(local.cidr_blocks_allowed_external_ccs, local.cidr_blocks_allowed_external_spark, local.cidr_blocks_allowed_external_cognizant)
+  transit_gateway_routes              = var.transit_gateway_routes
 }
 
 module "ssm" {
