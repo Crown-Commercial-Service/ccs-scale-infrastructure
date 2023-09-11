@@ -34,3 +34,12 @@ variable "private_db_subnet_ids" {
 variable "cloudfront_s3_log_retention_in_days" {
   type = number
 }
+
+variable "transit_gateway_routes" {
+  description = "Transit gateway routes"
+  type = map(object({
+    destination_cidr_block = string
+    transit_gateway_id     = string
+  }))
+  default = {}
+}
