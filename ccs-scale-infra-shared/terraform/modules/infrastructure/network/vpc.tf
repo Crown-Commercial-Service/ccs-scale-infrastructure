@@ -405,6 +405,18 @@ resource "aws_network_acl" "scale_database" {
   }
 }
 
+resource "aws_network_acl_rule" "scale_transit_gateway_database" {
+  for_each       = var.transit_gateway_routes
+  network_acl_id = aws_network_acl.scale_database.id
+  rule_number    = each.value.rule_number
+  egress         = true
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = each.value.destination_cidr_block
+  from_port      = 1024
+  to_port        = 65535
+}
+
 ##############################################################
 # Internet Gateway
 ##############################################################

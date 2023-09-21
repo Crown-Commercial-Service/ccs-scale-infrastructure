@@ -23,6 +23,7 @@ locals {
   transit_gateway_routes = {
     "dmp_cicd" = {
       destination_cidr_block = "172.31.0.0/16"
+      rule_number            = 300
       transit_gateway_id     = "tgw-0fddd8aeb224fe171"
     }
   }
