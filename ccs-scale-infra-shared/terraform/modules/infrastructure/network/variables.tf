@@ -43,6 +43,7 @@ variable "transit_gateway_routes" {
   type = map(object({
     destination_cidr_block = string
     transit_gateway_id     = string
+    rule_number            = number
   }))
   default = {}
 }
