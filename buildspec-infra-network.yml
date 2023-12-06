@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 12
+      nodejs: 18
     commands:
       # install required binary
       - "curl -s -qL -o /usr/bin/jq https://stedolan.github.io/jq/download/linux64/jq"
