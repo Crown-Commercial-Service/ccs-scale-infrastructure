@@ -6,7 +6,7 @@
 provider "aws" {
   profile = "default"
   region  = "eu-west-2"
-  version = "~> 2.70.0"
+  version = "~> 3.76.0"
 
   assume_role {
     role_arn = "arn:aws:iam::${var.aws_account_id}:role/CCS_SCALE_Build"
