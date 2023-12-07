@@ -55,7 +55,7 @@ resource "aws_lambda_function" "security_headers" {
   role             = aws_iam_role.lambda_edge_exec.arn
   description      = "Add HTTP security headers to responses"
   handler          = "index.handler"
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs18.x"
   timeout          = 10
   publish          = true
 }
