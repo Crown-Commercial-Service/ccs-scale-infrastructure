@@ -20,11 +20,10 @@ provider "aws" {
 
 locals {
   environment = "TST"
-  transit_gateway_routes = {
+  transit_gateway_networks = {
     "dmp_cicd" = {
-      destination_cidr_block = "172.31.0.0/16"
-      rule_number            = 300
-      transit_gateway_id     = "tgw-0fddd8aeb224fe171"
+      cidr_block  = "100.70.1.0/24"
+      rule_number = 300
     }
   }
 
@@ -35,8 +34,8 @@ data "aws_ssm_parameter" "aws_account_id" {
 }
 
 module "deploy" {
-  source                 = "../../modules/configs/deploy-all"
-  aws_account_id         = data.aws_ssm_parameter.aws_account_id.value
-  environment            = local.environment
-  transit_gateway_routes = local.transit_gateway_routes
+  source                   = "../../modules/configs/deploy-all"
+  aws_account_id           = data.aws_ssm_parameter.aws_account_id.value
+  environment              = local.environment
+  transit_gateway_networks = local.transit_gateway_networks
 }

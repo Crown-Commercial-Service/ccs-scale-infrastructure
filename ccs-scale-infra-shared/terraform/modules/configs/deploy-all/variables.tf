@@ -26,12 +26,11 @@ variable "cloudfront_s3_log_retention_in_days" {
   default = 7
 }
 
-variable "transit_gateway_routes" {
+variable "transit_gateway_networks" {
   description = "Transit gateway routes"
   type = map(object({
-    destination_cidr_block = string
-    transit_gateway_id     = string
-    rule_number            = number
+    cidr_block  = string
+    rule_number = number
   }))
   default = {}
 }
