@@ -25,7 +25,7 @@ module "network" {
   nat_eip_ids                  = split(",", data.aws_ssm_parameter.nat_eip_ids.value)
   public_nlb_eip_ids           = split(",", data.aws_ssm_parameter.public_nlb_eip_ids.value)
   cidr_blocks_allowed_external = var.cidr_blocks_allowed_external
-  transit_gateway_routes       = var.transit_gateway_routes
+  transit_gateway_networks     = var.transit_gateway_networks
 }
 
 module "cloudfront" {

@@ -20,6 +20,12 @@ provider "aws" {
 
 locals {
   environment = "PPD"
+  transit_gateway_networks = {
+    "dmp_cicd" = {
+      cidr_block  = "100.70.2.0/24"
+      rule_number = 300
+    }
+  }
 }
 
 data "aws_ssm_parameter" "aws_account_id" {
@@ -34,4 +40,5 @@ module "deploy" {
   cloudtrail_s3_log_retention_in_days = 2555 #7 years
   cloudwatch_s3_force_destroy         = false
   cloudfront_s3_log_retention_in_days = 2555 #7 years
+  transit_gateway_networks            = local.transit_gateway_networks
 }

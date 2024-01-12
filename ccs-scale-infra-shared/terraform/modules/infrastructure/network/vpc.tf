@@ -315,87 +315,6 @@ resource "aws_network_acl" "scale_database" {
   vpc_id     = var.vpc_id
   subnet_ids = var.private_db_subnet_ids
 
-  # Allow traffic from the VPC to database ports
-  # Postgres
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 10
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = 5432
-    to_port    = 5432
-  }
-
-  # Neo4J
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 20
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = 7687
-    to_port    = 7687
-  }
-
-  # Inbound from ECR / other AWS services
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 30
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = var.https_port
-    to_port    = var.https_port
-  }
-
-  # Allow inbound traffic from VPC on ephemeral ports for responses from internal / external services
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 40
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = 1024
-    to_port    = 65535
-  }
-
-  # Allow inbound internet traffic on the ephemeral ports (for responses)
-  ingress {
-    protocol   = "tcp"
-    rule_no    = 50
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 1024
-    to_port    = 65535
-  }
-
-  # Allow outbound traffic to the VPC on port 443 (ECR)
-  egress {
-    protocol   = "tcp"
-    rule_no    = 60
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = 443
-    to_port    = 443
-  }
-
-  # Allow outbound internet traffic on port 443 (ECR)
-  egress {
-    protocol   = "tcp"
-    rule_no    = 70
-    action     = "allow"
-    cidr_block = "0.0.0.0/0"
-    from_port  = 443
-    to_port    = 443
-  }
-
-  # Allow outbound traffic to the VPC on the ephemeral ports for responses to internal services
-  egress {
-    protocol   = "tcp"
-    rule_no    = 80
-    action     = "allow"
-    cidr_block = data.aws_vpc.scale.cidr_block
-    from_port  = 1024
-    to_port    = 65535
-  }
-
   tags = {
     Name        = "SCALE:EU2:${upper(var.environment)}:VPC:ACL-DB"
     Project     = module.globals.project_name
@@ -405,14 +324,38 @@ resource "aws_network_acl" "scale_database" {
   }
 }
 
-resource "aws_network_acl_rule" "scale_transit_gateway_database" {
-  for_each       = var.transit_gateway_routes
+resource "aws_network_acl_rule" "network_acls" {
+  for_each       = local.network_acls
+  network_acl_id = aws_network_acl.scale_database.id
+  rule_number    = each.value.rule_no
+  egress         = each.value.egress
+  protocol       = each.value.protocol
+  rule_action    = each.value.action
+  cidr_block     = each.value.cidr_block
+  from_port      = each.value.from_port
+  to_port        = each.value.to_port
+}
+
+resource "aws_network_acl_rule" "transit_gateway_acl_ingress" {
+  for_each       = var.transit_gateway_networks
   network_acl_id = aws_network_acl.scale_database.id
   rule_number    = each.value.rule_number
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = each.value.cidr_block
+  from_port      = 5432
+  to_port        = 5432
+}
+
+resource "aws_network_acl_rule" "transit_gateway_acl_egress" {
+  for_each       = var.transit_gateway_networks
+  network_acl_id = aws_network_acl.scale_database.id
+  rule_number    = each.value.rule_number + 1
   egress         = true
   protocol       = "tcp"
   rule_action    = "allow"
-  cidr_block     = each.value.destination_cidr_block
+  cidr_block     = each.value.cidr_block
   from_port      = 1024
   to_port        = 65535
 }
@@ -537,16 +480,6 @@ resource "aws_route_table_association" "scale_nat" {
 
   route_table_id = aws_route_table.scale_nat[count.index].id
   subnet_id      = var.private_app_subnet_ids[count.index]
-}
-
-##############################################################
-# Routes - vpc access via Transit Gateway
-##############################################################
-resource "aws_route" "transit_gateway_route_main" {
-  for_each               = var.transit_gateway_routes
-  route_table_id         = aws_route_table.scale_main.id
-  destination_cidr_block = each.value.destination_cidr_block
-  transit_gateway_id     = each.value.transit_gateway_id
 }
 
 ##############################################################
