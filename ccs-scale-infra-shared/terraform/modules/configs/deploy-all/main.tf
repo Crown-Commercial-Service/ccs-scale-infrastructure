@@ -61,6 +61,14 @@ data "aws_ssm_parameter" "cidr_blocks_allowed_external_cognizant" {
   name = "${lower(var.environment)}-cidr-blocks-allowed-external-cognizant"
 }
 
+data "aws_ssm_parameter" "ansible_tower_cidr_block" {
+  name = "${lower(var.environment)}-ansible-tower-cidr-block"
+}
+
+data "aws_ssm_parameter" "jumar_vpn_cidr_block" {
+  name = "${lower(var.environment)}-jumar-vpn-cidr-block"
+}
+
 locals {
   # Normalised CIDR blocks (accounting for 'none' i.e. "-" as value in SSM parameter)
   cidr_blocks_allowed_external_ccs       = data.aws_ssm_parameter.cidr_blocks_allowed_external_ccs.value != "-" ? split(",", data.aws_ssm_parameter.cidr_blocks_allowed_external_ccs.value) : []
@@ -101,6 +109,8 @@ module "bastion" {
   db_cidr_blocks               = split(",", data.aws_ssm_parameter.cidr_blocks_db.value)
   bastion_kms_key_id           = data.aws_ssm_parameter.bastion_kms_key_id.value
   cidr_blocks_allowed_external = concat(local.cidr_blocks_allowed_external_ccs, local.cidr_blocks_allowed_external_spark, local.cidr_blocks_allowed_external_cognizant)
+  ansible_tower_cidr_block     = [data.aws_ssm_parameter.ansible_tower_cidr_block.value]
+  jumar_vpn_cidr_block         = [data.aws_ssm_parameter.jumar_vpn_cidr_block.value]
 }
 
 # CloudTrail is not really required in lower enviromnments.
