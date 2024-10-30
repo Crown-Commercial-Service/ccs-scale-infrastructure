@@ -21,3 +21,11 @@ variable "bastion_kms_key_id" {
 variable "cidr_blocks_allowed_external" {
   type = list
 }
+
+variable "ansible_tower_cidr_block" {
+  type = list(string)
+}
+
+variable "jumar_vpn_cidr_block" {
+  type = list(string)
+}

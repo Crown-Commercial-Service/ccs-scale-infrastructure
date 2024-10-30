@@ -17,6 +17,25 @@ resource "aws_security_group" "allow_bastion_db_access" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = var.cidr_blocks_allowed_external
+    description = ""
+  }
+
+  # Ansible Tower
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.ansible_tower_cidr_block
+    description = "Ansible Tower"
+  }
+
+  # Jumar VPN
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.jumar_vpn_cidr_block
+    description = "Jumar VPN"
   }
 
   # For connection to Postgres and Neo4j
@@ -54,8 +73,24 @@ data "template_file" "init" {
   template = file("${path.module}/init.sh")
 }
 
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
 resource "aws_instance" "bastion_host" {
-  ami                         = "ami-0be057a22c63962cb"
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
   key_name                    = "${lower(var.environment)}-bastion-key"
   subnet_id                   = var.subnet_id
