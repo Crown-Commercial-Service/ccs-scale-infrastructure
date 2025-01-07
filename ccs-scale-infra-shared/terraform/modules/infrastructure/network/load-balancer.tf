@@ -81,6 +81,11 @@ resource "aws_route53_record" "alb_alias" {
   }
 }
 
+### Obtain the CloudFront EC2 Managed Prefix List
+data "aws_ec2_managed_prefix_list" "cloudfront" {
+  name = "com.amazonaws.global.cloudfront.origin-facing"
+}
+
 resource "aws_security_group" "public_alb_cf_global" {
   name                   = "allow_alb_external_cloudfront_only"
   description            = "Allow ingress from Cloudfront only via update sg lambda"
@@ -92,10 +97,10 @@ resource "aws_security_group" "public_alb_cf_global" {
   }
 
   ingress {
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    from_port   = 443
-    to_port     = 443
+    protocol        = "tcp"
+    prefix_list_ids = [data.aws_ec2_managed_prefix_list.cloudfront.id]
+    from_port       = 443
+    to_port         = 443
   }
 
   egress {
@@ -129,10 +134,10 @@ resource "aws_security_group" "public_alb_cf_regional" {
   }
 
   ingress {
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    from_port   = 443
-    to_port     = 443
+    protocol        = "tcp"
+    prefix_list_ids = [data.aws_ec2_managed_prefix_list.cloudfront.id]
+    from_port       = 443
+    to_port         = 443
   }
 
   egress {
